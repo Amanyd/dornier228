@@ -1,0 +1,2020 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+public/
+  assets/
+    button.mp3
+    theme.mp3
+  file.svg
+  globe.svg
+  next.svg
+  vercel.svg
+  window.svg
+src/
+  app/
+    api/
+      chat/
+        route.ts
+    favicon.ico
+    globals.css
+    layout.tsx
+    page.tsx
+  components/
+    AnnunciatorPanel.tsx
+    CockpitChat.tsx
+    FuelFlowGauge.tsx
+    FuelGauge.tsx
+    FuelTankSwitches.tsx
+    GaugeScrew.tsx
+    GlobalAudio.tsx
+    ITTGauge.tsx
+    Navbar.tsx
+    OilGauge.tsx
+    Panel.tsx
+    RPMGauge.tsx
+    Screw.tsx
+    ScrollReset.tsx
+    SystemControls.tsx
+    TorqueGauge.tsx
+    WarningLight.tsx
+  context/
+    SimulatorContext.tsx
+ui/
+  real.png
+  ui.png
+.gitignore
+AGENTS.md
+CLAUDE.md
+eslint.config.mjs
+next.config.ts
+package.json
+postcss.config.mjs
+README.md
+tsconfig.json
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="src/app/api/chat/route.ts">
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { NextRequest, NextResponse } from "next/server";
+
+const SYSTEM_PROMPT = `You are a Dornier 228 cockpit expert assistant. You are embedded inside a Do-228 Central Warning System simulator dashboard.
+
+You have deep knowledge of:
+- The Dornier 228 twin-turboprop aircraft, its variants (228-100, 228-200, 228NG)
+- Cockpit instrumentation: torque gauge, ITT (Interstage Turbine Temperature), fuel flow, RPM (N1/N2), oil pressure/temperature gauges
+- The Central Warning System (CWS) and annunciator panel with all warning lights
+- Fuel system: left wing, right wing, feeder tanks, auxiliary tanks, fuel quantity indicators
+- Engine systems: TPE331-5/5A turboprop engines (or GE CT7 for 228NG)
+- Electrical system: batteries, generators, inverters
+- Flight procedures, checklists, and emergency procedures
+- Aircraft performance data and limitations
+
+Keep your answers concise and technical. Use aviation terminology. If asked about something unrelated to the Do-228 or aviation, politely redirect to cockpit-related topics.
+
+Format responses clearly. Use short paragraphs. Bold key terms when helpful.`;
+
+export async function POST(req: NextRequest) {
+  try {
+    const { message, history } = await req.json();
+
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey || apiKey === "your_api_key_here") {
+      return NextResponse.json(
+        { error: "GEMINI_API_KEY not configured. Please add your API key to .env.local" },
+        { status: 500 }
+      );
+    }
+
+    const genAI = new GoogleGenerativeAI(apiKey);
+    // Keeping your requested model
+    const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
+
+    const chat = model.startChat({
+      history: [
+        {
+          role: "user",
+          parts: [{ text: "You are a Dornier 228 cockpit expert. Follow these instructions for all responses: " + SYSTEM_PROMPT }],
+        },
+        {
+          role: "model",
+          parts: [{ text: "Understood. I'm your Do-228 cockpit expert assistant, ready to help with any questions about the aircraft's systems, instruments, and procedures. What would you like to know?" }],
+        },
+        ...history.map((msg: { role: string; content: string }) => ({
+          role: msg.role === "user" ? "user" : "model",
+          parts: [{ text: msg.content }],
+        })),
+      ],
+    });
+
+    const result = await chat.sendMessage(message);
+    const response = result.response.text();
+
+    return NextResponse.json({ response });
+  } catch (error: any) {
+    console.error("Gemini API error:", error);
+
+    // Return the actual error status (like 503) so you know why it failed
+    return NextResponse.json(
+      { error: error.message || "Failed to get response from AI." },
+      { status: error.status || 500 }
+    );
+  }
+}
+</file>
+
+<file path="src/components/AnnunciatorPanel.tsx">
+"use client";
+
+import WarningLight from './WarningLight';
+import { useSimulator } from '@/context/SimulatorContext';
+
+export default function AnnunciatorPanel() {
+  const lights = [
+    // Row 1
+    { label: ["AUX-T", "REFUEL"], status: 'amber' },
+    { label: "OIL", status: 'red' },
+    { label: ["BATT-", "TEMP"], status: 'red' },
+    { label: "Vmo", status: 'red' },
+    { label: ["BATT-", "TEMP"], status: 'red' },
+    { label: "OIL", status: 'red' },
+    { label: "—", status: 'amber' },
+    
+    // Row 2
+    { label: "O₂", status: 'amber' },
+    { label: ["START", "SELECT"], status: 'amber' },
+    { label: ["CABIN", "TEMP"], status: 'amber' },
+    { label: "DOORS", status: 'red' },
+    { label: ["BLEED", "PRESS"], status: 'amber' },
+    { label: "—", status: 'amber' },
+    { label: "—", status: 'amber' },
+    
+    // Row 3
+    { label: "BATT 1", status: 'amber' },
+    { label: "GEN", status: 'amber' },
+    { label: "INV 1", status: 'amber' },
+    { label: ["NWS", "45°"], status: 'amber' },
+    { label: "INV2", status: 'amber' },
+    { label: "GEN", status: 'amber' },
+    { label: "BATT 2", status: 'amber' },
+    
+    // Row 4
+    { label: ["FUEL", "PRESS"], status: 'amber' },
+    { label: ["FUEL", "QTY"], status: 'amber' },
+    { label: ["FUEL", "FILT"], status: 'amber' },
+    { label: ["NWS", "BYPASS"], status: 'amber' },
+    { label: ["FUEL", "FILT"], status: 'amber' },
+    { label: ["FUEL", "QTY"], status: 'amber' },
+    { label: ["FUEL", "PRESS"], status: 'amber' },
+    
+    // Row 5
+    { label: ["INLET", "DE-ICE"], status: 'amber' },
+    { label: "PITOT", status: 'amber' },
+    { label: ["WINDSH", "OVERH"], status: 'amber' },
+    { label: "—", status: 'amber' },
+    { label: ["FUEL", "DUMP"], status: 'amber' },
+    { label: "PITOT", status: 'amber' },
+    { label: ["INLET", "DE-ICE"], status: 'amber' },
+  ];
+
+  const sim = useSimulator();
+
+  const computeForced = (label: string | string[]) => {
+    const text = Array.isArray(label) ? label.join(" ") : label;
+    const normalized = text.toUpperCase();
+    if (normalized.includes("AUX-T") || normalized.includes("REFUEL")) return sim.refuelWarning;
+    if (normalized.includes("BATT-") && normalized.includes("TEMP")) return sim.batteryOverheat;
+    if (normalized.includes("FUEL") && normalized.includes("PRESS")) return sim.fuelPressureWarning;
+    if (normalized.includes("INLET") && normalized.includes("DE-ICE")) return sim.inletDeIceWarning;
+    return undefined;
+  };
+
+  return (
+    <div className="w-full bg-[#1a1f24] p-3 md:p-4 rounded shadow-[inset_0_0_20px_rgba(0,0,0,0.9)] border-2 border-[#111]">
+      <div className="grid grid-cols-7 gap-1 md:gap-[6px]">
+        {lights.map((light, index) => {
+          if (!light.label) {
+            return <div key={index} className="opacity-0"></div>;
+          }
+          const forced = computeForced(light.label);
+          return (
+            <WarningLight
+              key={index}
+              label={light.label}
+              status={light.status as 'off' | 'amber' | 'red'}
+              forcedOn={forced}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/CockpitChat.tsx">
+"use client";
+
+import React, { useState, useRef, useEffect } from "react";
+
+interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export default function CockpitChat() {
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    {
+      role: "assistant",
+      content:
+        "Do-228 CWS Assistant online. Ask me anything about the cockpit systems, instruments, or procedures.",
+    },
+  ]);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const didMountRef = useRef(false);
+
+  useEffect(() => {
+    if (!didMountRef.current) {
+      didMountRef.current = true;
+      return;
+    }
+
+    const container = messagesContainerRef.current;
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
+  }, [messages]);
+
+  const sendMessage = async () => {
+    const trimmed = input.trim();
+    if (!trimmed || isLoading) return;
+
+    const userMsg: ChatMessage = { role: "user", content: trimmed };
+    setMessages((prev) => [...prev, userMsg]);
+    setInput("");
+    setIsLoading(true);
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: trimmed,
+          history: messages.filter((m) => m !== messages[0]),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.error) {
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: `⚠ ${data.error}` },
+        ]);
+      } else {
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: data.response },
+        ]);
+      }
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: "⚠ Connection error. Please try again.",
+        },
+      ]);
+    } finally {
+      setIsLoading(false);
+      inputRef.current?.focus();
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-full w-full">
+      {/* Header */}
+      <div className="bg-[#1a2530] border-b-[2px] border-[#111] px-3 py-2 flex items-center gap-2 shrink-0">
+        {/* Status LED */}
+        <div className="relative flex items-center justify-center">
+          <div className="absolute w-5 h-5 rounded-full bg-[#22cc33] opacity-30 blur-sm pointer-events-none"></div>
+          <div className="w-2 h-2 rounded-full bg-[#22cc33] shadow-[0_0_4px_#22cc33] z-10"></div>
+        </div>
+        <span className="text-[#8fa8c0] text-xs font-bold tracking-widest uppercase">
+          CWS ASSISTANT
+        </span>
+      </div>
+
+      {/* Messages area with custom scrollbar */}
+      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-3 space-y-3 scrollbar-custom min-h-0">
+        {messages.map((msg, i) => (
+          <div
+            key={i}
+            className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+          >
+            <div
+              className={`max-w-[85%] px-3 py-2 rounded-lg text-xs md:text-sm leading-relaxed ${
+                msg.role === "user"
+                  ? "bg-[#2a4a6a] text-[#d0e0f0] border border-[#3a5a7a] rounded-br-none"
+                  : "bg-[#1a2228] text-[#a0b8cc] border border-[#2a3a44] rounded-bl-none"
+              }`}
+            >
+              {msg.content.split("\n").map((line, j) => (
+                <span key={j}>
+                  {line.split(/\*\*(.*?)\*\*/g).map((part, k) =>
+                    k % 2 === 1 ? (
+                      <strong key={k} className="text-[#e0e8f0] font-semibold">
+                        {part}
+                      </strong>
+                    ) : (
+                      part
+                    )
+                  )}
+                  {j < msg.content.split("\n").length - 1 && <br />}
+                </span>
+              ))}
+            </div>
+          </div>
+        ))}
+
+        {isLoading && (
+          <div className="flex justify-start">
+            <div className="bg-[#1a2228] text-[#607888] border border-[#2a3a44] px-3 py-2 rounded-lg rounded-bl-none text-xs">
+              <span className="inline-flex gap-1">
+                <span className="animate-bounce" style={{ animationDelay: "0ms" }}>●</span>
+                <span className="animate-bounce" style={{ animationDelay: "150ms" }}>●</span>
+                <span className="animate-bounce" style={{ animationDelay: "300ms" }}>●</span>
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Input */}
+      <div className="shrink-0 border-t-[2px] border-[#111] bg-[#1a2530] p-2 flex gap-2">
+        <input
+          ref={inputRef}
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Ask about the Do-228..."
+          disabled={isLoading}
+          className="flex-1 bg-[#0d1418] border border-[#2a3a44] rounded px-3 py-2 text-xs md:text-sm text-[#c0d0e0] placeholder-[#4a5a6a] focus:outline-none focus:border-[#3a6a9a] transition-colors disabled:opacity-50"
+        />
+        <button
+          onClick={sendMessage}
+          disabled={isLoading || !input.trim()}
+          className="bg-[#2a4a6a] hover:bg-[#3a5a7a] disabled:bg-[#1a2a3a] disabled:opacity-50 text-[#c0d8f0] px-3 py-2 rounded text-xs font-bold tracking-wider transition-colors border border-[#3a5a7a] disabled:border-[#2a3a44]"
+        >
+          SEND
+        </button>
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/FuelFlowGauge.tsx">
+import React from 'react';
+import GaugeScrew from "./GaugeScrew";
+
+export default function FuelFlowGauge({ className = "w-48 h-48 md:w-56 md:h-56", hideLeftScrews = false, hideRightScrews = false }: { className?: string; hideLeftScrews?: boolean; hideRightScrews?: boolean }) {
+  // Scale 0 to 500.
+  // -135 deg to 135 deg = 270 deg total.
+  // 270 / 500 = 0.54 deg per unit.
+  const getAngle = (val: number) => -135 + val * 0.54;
+
+  return (
+    <div className={`relative rounded-full bg-[#1b2228] border-[3px] border-[#111] shadow-[inset_0_0_20px_rgba(0,0,0,0.8),0_4px_10px_rgba(0,0,0,0.5)] flex items-center justify-center shrink-0 ${className}`}>
+      {/* Outer bezel ring */}
+      <div className="absolute inset-0 rounded-full border-[3px] border-[#3a4a5a] opacity-50 pointer-events-none"></div>
+      
+      {/* Screw holes */}
+      {!hideLeftScrews && <GaugeScrew className="-top-2 left-1" />}
+      {!hideRightScrews && <GaugeScrew className="-top-2 right-1" />}
+      {!hideLeftScrews && <GaugeScrew className="-bottom-2 left-1" />}
+      {!hideRightScrews && <GaugeScrew className="-bottom-2 right-1" />}
+
+      <svg width="100%" height="100%" viewBox="0 0 200 200" className="absolute inset-0">
+        <g transform="translate(100, 100)">
+          {/* Tick marks. 0 to 500 every 20 units */}
+          {Array.from({ length: 26 }).map((_, i) => {
+            const val = i * 20;
+            const angle = getAngle(val);
+            const isMajor = val % 100 === 0;
+            return (
+              <line
+                key={`tick-${i}`}
+                x1="0" y1={isMajor ? "-82" : "-82"} x2="0" y2={isMajor ? "-70" : "-76"}
+                stroke="#fff" strokeWidth={isMajor ? "2.5" : "1.5"}
+                transform={`rotate(${angle})`}
+              />
+            );
+          })}
+          
+          {/* Numbers: 0, 100, 200, 300, 400, 500 */}
+          {[0, 100, 200, 300, 400, 500].map((num) => {
+            const angle = getAngle(num);
+            const rad = (angle - 90) * (Math.PI / 180);
+            const r = 55;
+            const x = Math.cos(rad) * r;
+            const y = Math.sin(rad) * r;
+            return (
+              <text
+                key={num}
+                x={x} y={y}
+                fill="#fff" fontSize="16" fontFamily="sans-serif" fontWeight="bold"
+                textAnchor="middle" alignmentBaseline="middle"
+              >
+                {num}
+              </text>
+            );
+          })}
+
+          {/* Texts */}
+          <text x="0" y="-30" fill="#fff" fontSize="14" textAnchor="middle" fontWeight="bold" letterSpacing="0.5">FUEL FLOW</text>
+          <text x="0" y="45" fill="#fff" fontSize="12" textAnchor="middle" fontWeight="bold">LBS/HR</text>
+
+          {/* Needle - pointing to 0 */}
+          <g transform={`rotate(${getAngle(0)})`}>
+            <line x1="2" y1="10" x2="2" y2="-75" stroke="rgba(0,0,0,0.5)" strokeWidth="4" />
+            <line x1="0" y1="10" x2="0" y2="-75" stroke="#fff" strokeWidth="4" strokeLinecap="round" />
+            <polygon points="-3,-65 0,-85 3,-65" fill="#fff" />
+          </g>
+
+          {/* Center cap */}
+          <circle cx="0" cy="0" r="10" fill="#111" stroke="#333" strokeWidth="2" />
+          <circle cx="0" cy="0" r="5" fill="#000" />
+        </g>
+      </svg>
+      
+      {/* Glass glare */}
+      <div className="absolute inset-2 rounded-full bg-gradient-to-tr from-transparent via-[rgba(255,255,255,0.02)] to-[rgba(255,255,255,0.15)] pointer-events-none"></div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/FuelGauge.tsx">
+import React from 'react';
+import GaugeScrew from "./GaugeScrew";
+
+export default function FuelGauge({ className = "w-48 h-48 md:w-56 md:h-56", bottomTextSize = 10, hideLeftScrews = false, hideRightScrews = false }: { className?: string; bottomTextSize?: number; hideLeftScrews?: boolean; hideRightScrews?: boolean }) {
+  return (
+    <div className={`relative rounded-full bg-[#1b2228] border-[3px] border-[#111] shadow-[inset_0_0_20px_rgba(0,0,0,0.8),0_4px_10px_rgba(0,0,0,0.5)] flex items-center justify-center shrink-0 ${className}`}>
+      {/* Outer bezel ring */}
+      <div className="absolute inset-0 rounded-full border-[3px] border-[#3a4a5a] opacity-50 pointer-events-none"></div>
+      
+      {/* Screw holes on the gauge itself */}
+      {!hideLeftScrews && <GaugeScrew className="-top-2 left-1" />}
+      {!hideRightScrews && <GaugeScrew className="-top-2 right-1" />}
+      {!hideLeftScrews && <GaugeScrew className="-bottom-2 left-1" />}
+      {!hideRightScrews && <GaugeScrew className="-bottom-2 right-1" />}
+
+      <svg width="100%" height="100%" viewBox="0 0 200 200" className="absolute inset-0">
+        <g transform="translate(100, 100)">
+          {/* Tick marks. Angle range: -135 to +135 degrees. Total 270 degrees. */}
+          {/* 0 to 25 -> 25 units. 270 / 25 = 10.8 degrees per unit. */}
+          {Array.from({ length: 26 }).map((_, i) => {
+            const angle = -135 + i * 10.8;
+            const isMajor = i % 5 === 0;
+            return (
+              <line
+                key={i}
+                x1="0"
+                y1={isMajor ? "-82" : "-82"}
+                x2="0"
+                y2={isMajor ? "-70" : "-76"}
+                stroke="#fff"
+                strokeWidth={isMajor ? "2.5" : "1.5"}
+                transform={`rotate(${angle})`}
+              />
+            );
+          })}
+          
+          {/* Numbers */}
+          {[0, 5, 10, 15, 20, 25].map((num) => {
+            const angle = -135 + num * 10.8;
+            // Radius for text placement: 55
+            const rad = (angle - 90) * (Math.PI / 180);
+            const x = Math.cos(rad) * 55;
+            const y = Math.sin(rad) * 55;
+            return (
+              <text
+                key={num}
+                x={x}
+                y={y}
+                fill="#fff"
+                fontSize="16"
+                fontFamily="sans-serif"
+                fontWeight="bold"
+                textAnchor="middle"
+                alignmentBaseline="middle"
+              >
+                {num}
+              </text>
+            );
+          })}
+
+          {/* Texts */}
+          <text x="0" y="-20" fill="#999" fontSize="8" textAnchor="middle" letterSpacing="0.5">Feeder Tank x10</text>
+          <text x="0" y="25" fill="#fff" fontSize="9" textAnchor="middle" fontWeight="bold">x100 lbs</text>
+          <text x="0" y="65" fill="#fff" fontSize={bottomTextSize} fontWeight="bold" textAnchor="middle" letterSpacing="0.5">FUEL QTY</text>
+
+          {/* Needle */}
+          <g transform={`rotate(${-135 + 10 * 10.8})`}> {/* Pointing at 10 */}
+            {/* Needle shadow */}
+            <line x1="2" y1="10" x2="2" y2="-75" stroke="rgba(0,0,0,0.5)" strokeWidth="4" />
+            {/* Needle body */}
+            <line x1="0" y1="10" x2="0" y2="-75" stroke="#fff" strokeWidth="4" strokeLinecap="round" />
+            <polygon points="-3,-65 0,-85 3,-65" fill="#fff" />
+          </g>
+
+          {/* Center cap */}
+          <circle cx="0" cy="0" r="10" fill="#111" stroke="#333" strokeWidth="2" />
+          <circle cx="0" cy="0" r="5" fill="#000" />
+        </g>
+      </svg>
+      
+      {/* Glass glare */}
+      <div className="absolute inset-2 rounded-full bg-gradient-to-tr from-transparent via-[rgba(255,255,255,0.02)] to-[rgba(255,255,255,0.15)] pointer-events-none"></div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/FuelTankSwitches.tsx">
+"use client";
+
+import React, { useState } from 'react';
+
+const SidewaysToggle = ({ 
+  position, 
+  onChange 
+}: { 
+  position: 'left' | 'center' | 'right'; 
+  onChange: (pos: 'left' | 'center' | 'right') => void;
+}) => {
+  const rotMap = {
+    'left': '-rotate-[45deg]',
+    'center': 'rotate-0',
+    'right': 'rotate-[45deg]'
+  };
+
+  const handleClick = () => {
+    if (typeof window !== 'undefined') {
+      const audio = new Audio('/assets/button.mp3');
+      audio.volume = 1.0;
+      audio.play().catch(() => {});
+    }
+    if (position === 'left') onChange('center');
+    else if (position === 'center') onChange('right');
+    else onChange('left');
+  };
+
+  return (
+    <div 
+      className="relative w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center cursor-pointer group"
+      onClick={handleClick}
+    >
+      {/* Outer base ring (dark grey metal) */}
+      <div className="absolute w-12 h-12 md:w-14 md:h-14 rounded-full bg-[#3a3d40] border-[2px] border-[#111] shadow-[0_2px_5px_rgba(0,0,0,0.8),inset_0_1px_2px_rgba(255,255,255,0.2)] flex items-center justify-center">
+        {/* Inner black recess */}
+        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#0a0a0a] shadow-[inset_0_3px_6px_rgba(0,0,0,1)]"></div>
+        {/* Slotted nut details */}
+        <div className="absolute w-10 h-10 md:w-12 md:h-12 rounded-full border-[3px] border-dashed border-[#1a1a1a] opacity-60 pointer-events-none"></div>
+      </div>
+      
+      {/* Bat handle */}
+      <div 
+        className={`absolute w-[14px] md:w-[18px] h-10 md:h-12 bottom-1/2 origin-bottom transition-transform duration-150 ease-out z-10 ${rotMap[position]}`}
+      >
+        {/* The handle shaft */}
+        <div className="w-full h-full bg-gradient-to-r from-[#222] via-[#555] to-[#111] rounded-t-full shadow-[3px_3px_6px_rgba(0,0,0,0.8)] border-[1px] border-[#0a0a0a] relative overflow-hidden group-active:scale-95 transition-transform">
+          {/* Subtle reflection */}
+          <div className="absolute top-1 left-[20%] w-[20%] h-[80%] bg-white opacity-20 rounded-full"></div>
+        </div>
+      </div>
+      
+      {/* Base pivot shadow/cover */}
+      <div className="absolute w-5 h-5 bg-gradient-to-br from-[#333] to-[#111] rounded-full z-20 shadow-[0_2px_4px_rgba(0,0,0,0.6)] border-[1px] border-[#111]"></div>
+    </div>
+  );
+};
+
+export default function FuelTankSwitches() {
+  const [leftPos, setLeftPos] = useState<'left'|'center'|'right'>('center');
+  const [rightPos, setRightPos] = useState<'left'|'center'|'right'>('center');
+
+  return (
+    <div className="relative w-full h-full flex items-center justify-center p-2 md:p-4 min-h-[200px]">
+      {/* The black plate */}
+      <div className="w-full max-w-2xl bg-[#1c1f22] border-[2px] border-[#111] rounded-[2px] p-2 relative shadow-[0_6px_15px_rgba(0,0,0,0.8)]">
+        {/* White thin border inset */}
+        <div className="absolute inset-[6px] border-[1.5px] border-[#e0e0e0] opacity-80 rounded-[1px] pointer-events-none"></div>
+
+        {/* Inner Content Container */}
+        <div className="relative z-10 w-full flex flex-row items-center justify-center py-6 px-4">
+          
+          {/* Left OUTER Label */}
+          <div className="flex flex-col items-center justify-center mr-2 md:mr-6 mb-8">
+            <span className="text-[#e0e0e0] font-bold text-[10px] md:text-sm tracking-wider">OUTER</span>
+            <div className="border-[1.5px] border-[#e0e0e0] px-1 mt-[2px]">
+              <span className="text-[#e0e0e0] font-bold text-[7px] md:text-[10px] tracking-wider">+AUX-T</span>
+            </div>
+          </div>
+
+          {/* Left Switch Group */}
+          <div className="flex flex-col items-center justify-center relative">
+            <span className="text-[#e0e0e0] font-bold text-[10px] md:text-sm tracking-wider mb-2">TOTAL</span>
+            <SidewaysToggle position={leftPos} onChange={setLeftPos} />
+            <span className="text-[#e0e0e0] font-bold text-[11px] md:text-base tracking-widest mt-4 whitespace-nowrap">LEFT WING</span>
+          </div>
+
+          {/* Center FEEDER TANK */}
+          <div className="flex flex-col items-center justify-start h-full mx-3 md:mx-8 self-start mt-2">
+            <span className="text-[#e0e0e0] font-bold text-[10px] md:text-sm tracking-wider text-center leading-tight">
+              FEEDER<br/>TANK
+            </span>
+          </div>
+
+          {/* Right Switch Group */}
+          <div className="flex flex-col items-center justify-center relative">
+            <span className="text-[#e0e0e0] font-bold text-[10px] md:text-sm tracking-wider mb-2">TOTAL</span>
+            <SidewaysToggle position={rightPos} onChange={setRightPos} />
+            <span className="text-[#e0e0e0] font-bold text-[11px] md:text-base tracking-widest mt-4 whitespace-nowrap">RIGHT WING</span>
+          </div>
+
+          {/* Right OUTER Label */}
+          <div className="flex flex-col items-center justify-center ml-2 md:ml-6 mb-8">
+            <span className="text-[#e0e0e0] font-bold text-[10px] md:text-sm tracking-wider">OUTER</span>
+            <div className="border-[1.5px] border-[#e0e0e0] px-1 mt-[2px]">
+              <span className="text-[#e0e0e0] font-bold text-[7px] md:text-[10px] tracking-wider">+AUX-T</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/GaugeScrew.tsx">
+import React from 'react';
+
+export default function GaugeScrew({ className = "" }: { className?: string }) {
+  return (
+    <div className={`absolute w-3 h-3 rounded-full bg-[#4a4f54] border border-[#222] shadow-[0_1px_1px_rgba(255,255,255,0.1),inset_0_2px_3px_rgba(0,0,0,0.6)] flex items-center justify-center ${className}`}>
+      <div className="w-2 h-[1.5px] bg-[#222] rotate-45 shadow-[inset_0_0_1px_rgba(0,0,0,0.5)]"></div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/GlobalAudio.tsx">
+"use client";
+
+import { useEffect, useRef } from 'react';
+
+export default function GlobalAudio() {
+  const themeAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    const audio = new Audio('/assets/theme.mp3');
+    audio.loop = true;
+    audio.volume = 0.15; // Lower volume for background theme
+    themeAudioRef.current = audio;
+
+    const tryPlay = () => {
+      audio.play().catch(e => console.log('Autoplay blocked, waiting for interaction:', e));
+    };
+
+    // Attempt to play immediately
+    tryPlay();
+
+    // Start playing as soon as the user interacts with the document
+    const startAudio = () => {
+      if (themeAudioRef.current && themeAudioRef.current.paused) {
+        themeAudioRef.current.play().catch(console.error);
+      }
+      document.removeEventListener('click', startAudio);
+      document.removeEventListener('keydown', startAudio);
+    };
+
+    document.addEventListener('click', startAudio);
+    document.addEventListener('keydown', startAudio);
+
+    return () => {
+      audio.pause();
+      document.removeEventListener('click', startAudio);
+      document.removeEventListener('keydown', startAudio);
+    };
+  }, []);
+
+  return null;
+}
+</file>
+
+<file path="src/components/ITTGauge.tsx">
+import React from 'react';
+import GaugeScrew from "./GaugeScrew";
+
+function describeArc(x: number, y: number, radius: number, startAngle: number, endAngle: number) {
+  const polarToCartesian = (centerX: number, centerY: number, rad: number, angleInDegrees: number) => {
+    const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
+    return {
+      x: centerX + (rad * Math.cos(angleInRadians)),
+      y: centerY + (rad * Math.sin(angleInRadians))
+    };
+  }
+  const start = polarToCartesian(x, y, radius, endAngle);
+  const end = polarToCartesian(x, y, radius, startAngle);
+  const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+  return [
+    "M", start.x, start.y, 
+    "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y
+  ].join(" ");
+}
+
+export default function ITTGauge({ className = "w-48 h-48 md:w-56 md:h-56", hideLeftScrews = false, hideRightScrews = false }: { className?: string; hideLeftScrews?: boolean; hideRightScrews?: boolean }) {
+  // Scale 3 to 12.
+  // 3 is at -150 deg, 12 is at 30 deg. (180 deg total, 20 deg per unit)
+  const getAngle = (val: number) => -150 + (val - 3) * 20;
+
+  return (
+    <div className={`relative rounded-full bg-[#1b2228] border-[3px] border-[#111] shadow-[inset_0_0_20px_rgba(0,0,0,0.8),0_4px_10px_rgba(0,0,0,0.5)] flex items-center justify-center shrink-0 ${className}`}>
+      {/* Outer bezel ring */}
+      <div className="absolute inset-0 rounded-full border-[3px] border-[#3a4a5a] opacity-50 pointer-events-none"></div>
+      
+      {/* Screw holes */}
+      {!hideLeftScrews && <GaugeScrew className="-top-2 left-1" />}
+      {!hideRightScrews && <GaugeScrew className="-top-2 right-1" />}
+      {!hideLeftScrews && <GaugeScrew className="-bottom-2 left-1" />}
+      {!hideRightScrews && <GaugeScrew className="-bottom-2 right-1" />}
+
+      <svg width="100%" height="100%" viewBox="0 0 200 200" className="absolute inset-0">
+        <g transform="translate(100, 100)">
+          {/* Green Arc from 4 to 8 */}
+          <path d={describeArc(0, 0, 82, getAngle(4), getAngle(8))} fill="none" stroke="#22cc33" strokeWidth="4" />
+          
+          {/* Orange/Red small markings at 9 */}
+          <path d={describeArc(0, 0, 82, getAngle(8.8), getAngle(9))} fill="none" stroke="#ffaa00" strokeWidth="4" />
+          <path d={describeArc(0, 0, 82, getAngle(9), getAngle(9.2))} fill="none" stroke="#ff3333" strokeWidth="4" />
+
+          {/* Tick marks. 3 to 12. */}
+          {Array.from({ length: 10 }).map((_, i) => {
+            const val = i + 3;
+            const angle = getAngle(val);
+            return (
+              <line
+                key={`major-${i}`}
+                x1="0" y1="-82" x2="0" y2="-70"
+                stroke="#fff" strokeWidth="2.5"
+                transform={`rotate(${angle})`}
+              />
+            );
+          })}
+          
+          {/* Minor ticks every 0.5 */}
+          {Array.from({ length: 9 }).map((_, i) => {
+            const val = i + 3.5;
+            const angle = getAngle(val);
+            return (
+              <line
+                key={`minor-${i}`}
+                x1="0" y1="-82" x2="0" y2="-76"
+                stroke="#fff" strokeWidth="1.5"
+                transform={`rotate(${angle})`}
+              />
+            );
+          })}
+          
+          {/* Orange Triangle at 11.5 */}
+          <g transform={`rotate(${getAngle(11.5)})`}>
+            <polygon points="-4,-86 4,-86 0,-76" fill="#ff7700" />
+          </g>
+
+          {/* Numbers: 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 */}
+          {[3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((num) => {
+            const angle = getAngle(num);
+            // 11 and 12 need to be shifted slightly to not overlap with text
+            const rad = (angle - 90) * (Math.PI / 180);
+            const r = 55;
+            const x = Math.cos(rad) * r;
+            const y = Math.sin(rad) * r;
+            return (
+              <text
+                key={num}
+                x={x} y={y}
+                fill="#fff" fontSize="16" fontFamily="sans-serif" fontWeight="bold"
+                textAnchor="middle" alignmentBaseline="middle"
+              >
+                {num}
+              </text>
+            );
+          })}
+
+          {/* Texts */}
+          <text x="0" y="-15" fill="#fff" fontSize="14" textAnchor="middle" fontWeight="bold" letterSpacing="0.5">ITT</text>
+          <text x="0" y="45" fill="#fff" fontSize="12" textAnchor="middle" fontWeight="bold">°C X 100</text>
+          
+          <text x="35" y="60" fill="#fff" fontSize="10" fontWeight="bold" textAnchor="middle">OFF</text>
+
+          {/* Orange warning text near 11 */}
+          <text x="55" y="-15" fill="#ff7700" fontSize="8" fontWeight="bold" textAnchor="middle">ST. LIM</text>
+          <text x="55" y="-5" fill="#ff7700" fontSize="8" fontWeight="bold" textAnchor="middle">1149°</text>
+
+          {/* Needle - pointing to 3 (OFF) */}
+          <g transform={`rotate(${getAngle(3)})`}>
+            <line x1="2" y1="10" x2="2" y2="-75" stroke="rgba(0,0,0,0.5)" strokeWidth="4" />
+            <line x1="0" y1="10" x2="0" y2="-75" stroke="#fff" strokeWidth="4" strokeLinecap="round" />
+            <polygon points="-3,-65 0,-85 3,-65" fill="#fff" />
+          </g>
+
+          {/* Center cap */}
+          <circle cx="0" cy="0" r="10" fill="#111" stroke="#333" strokeWidth="2" />
+          <circle cx="0" cy="0" r="5" fill="#000" />
+        </g>
+      </svg>
+      
+      {/* Glass glare */}
+      <div className="absolute inset-2 rounded-full bg-gradient-to-tr from-transparent via-[rgba(255,255,255,0.02)] to-[rgba(255,255,255,0.15)] pointer-events-none"></div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/Navbar.tsx">
+export default function Navbar() {
+  return (
+    <div className="w-full bg-[#273a4b] border-b-[3px] border-b-[#1a2632] py-4 flex flex-col items-center justify-center shadow-lg relative overflow-hidden">
+      {/* Top subtle highlight */}
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-[#425a72] opacity-70"></div>
+      
+      <h1 className="text-[#c1d0df] text-2xl md:text-3xl font-bold tracking-[0.15em] font-sans drop-shadow-md">
+        Do-228 CENTRAL WARNING SYSTEM
+      </h1>
+      
+      {/* Optional subtle bottom inset line */}
+      <div className="absolute bottom-[2px] left-0 right-0 h-[1px] bg-[#3a5268] opacity-50"></div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/OilGauge.tsx">
+import React from 'react';
+import GaugeScrew from "./GaugeScrew";
+
+function describeArc(x: number, y: number, radius: number, startAngle: number, endAngle: number) {
+  const polarToCartesian = (centerX: number, centerY: number, rad: number, angleInDegrees: number) => {
+    const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
+    return {
+      x: centerX + (rad * Math.cos(angleInRadians)),
+      y: centerY + (rad * Math.sin(angleInRadians))
+    };
+  }
+  const start = polarToCartesian(x, y, radius, endAngle);
+  const end = polarToCartesian(x, y, radius, startAngle);
+  const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+  return [
+    "M", start.x, start.y, 
+    "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y
+  ].join(" ");
+}
+
+export default function OilGauge({ className = "w-48 h-48 md:w-56 md:h-56", hideLeftScrews = false, hideRightScrews = false }: { className?: string; hideLeftScrews?: boolean; hideRightScrews?: boolean }) {
+  // Left Scale (P: 0 to 150)
+  // Center Pivot. Sweeps from -135 (bottom left) to -45 (top left)
+  const leftAngle = (val: number) => -135 + (val / 150) * 90;
+
+  // Right Scale (T: -70 to 150)
+  // Center Pivot. Sweeps from 135 (bottom right) to 45 (top right)
+  const rightAngle = (val: number) => 135 - ((val + 70) / 220) * 90;
+
+  return (
+    <div className={`relative rounded-full bg-[#1b2228] border-[3px] border-[#111] shadow-[inset_0_0_20px_rgba(0,0,0,0.8),0_4px_10px_rgba(0,0,0,0.5)] flex items-center justify-center shrink-0 ${className}`}>
+      {/* Outer bezel ring */}
+      <div className="absolute inset-0 rounded-full border-[3px] border-[#3a4a5a] opacity-50 pointer-events-none"></div>
+      
+      {/* Screw holes */}
+      {!hideLeftScrews && <GaugeScrew className="-top-2 left-1" />}
+      {!hideRightScrews && <GaugeScrew className="-top-2 right-1" />}
+      {!hideLeftScrews && <GaugeScrew className="-bottom-2 left-1" />}
+      {!hideRightScrews && <GaugeScrew className="-bottom-2 right-1" />}
+
+      <svg width="100%" height="100%" viewBox="0 0 200 200" className="absolute inset-0">
+        <g transform="translate(100, 100)">
+          
+          {/* ----- LEFT SCALE (P) ----- */}
+          {/* Arcs: Clockwise drawing */}
+          <path d={describeArc(0, 0, 78, leftAngle(0), leftAngle(50))} fill="none" stroke="#555" strokeWidth="4" />
+          <path d={describeArc(0, 0, 78, leftAngle(50), leftAngle(100))} fill="none" stroke="#22cc33" strokeWidth="4" />
+          <path d={describeArc(0, 0, 78, leftAngle(100), leftAngle(150))} fill="none" stroke="#ff3333" strokeWidth="4" />
+
+          {/* Left Ticks and Numbers */}
+          {[0, 50, 100, 150].map((val) => {
+            const angle = leftAngle(val);
+            const rad = (angle - 90) * Math.PI / 180;
+            const x = Math.cos(rad) * 55;
+            const y = Math.sin(rad) * 55;
+            return (
+              <g key={`left-${val}`}>
+                <line
+                  x1="0" y1="-78" x2="0" y2="-68"
+                  stroke="#fff" strokeWidth="2.5"
+                  transform={`rotate(${angle})`}
+                />
+                <text
+                  x={x} y={y}
+                  fill="#fff" fontSize="12" fontFamily="sans-serif" fontWeight="bold"
+                  textAnchor="middle" alignmentBaseline="middle"
+                >
+                  {val}
+                </text>
+              </g>
+            );
+          })}
+
+
+          {/* ----- RIGHT SCALE (T) ----- */}
+          {/* Arcs: Clockwise drawing */}
+          <path d={describeArc(0, 0, 78, rightAngle(150), rightAngle(100))} fill="none" stroke="#ff3333" strokeWidth="4" />
+          <path d={describeArc(0, 0, 78, rightAngle(100), rightAngle(0))} fill="none" stroke="#22cc33" strokeWidth="4" />
+          <path d={describeArc(0, 0, 78, rightAngle(0), rightAngle(-70))} fill="none" stroke="#ffcc00" strokeWidth="4" />
+
+          {/* Right Ticks and Numbers */}
+          {[-70, 0, 50, 100, 150].map((val) => {
+            const angle = rightAngle(val);
+            const rad = (angle - 90) * Math.PI / 180;
+            const x = Math.cos(rad) * 55;
+            const y = Math.sin(rad) * 55;
+            return (
+              <g key={`right-${val}`}>
+                <line
+                  x1="0" y1="-78" x2="0" y2="-68"
+                  stroke="#fff" strokeWidth="2.5"
+                  transform={`rotate(${angle})`}
+                />
+                <text
+                  x={x} y={y}
+                  fill="#fff" fontSize="12" fontFamily="sans-serif" fontWeight="bold"
+                  textAnchor="middle" alignmentBaseline="middle"
+                >
+                  {val}
+                </text>
+              </g>
+            );
+          })}
+
+          {/* ----- TEXTS ----- */}
+          <text x="0" y="-80" fill="#fff" fontSize="14" textAnchor="middle" fontWeight="bold" letterSpacing="1">OIL</text>
+          
+          {/* Left / Right designations */}
+          <text x="-40" y="-15" fill="#aaa" fontSize="14" textAnchor="middle" fontWeight="bold">P</text>
+          <text x="-40" y="5" fill="#888" fontSize="10" textAnchor="middle" fontWeight="bold">PSI</text>
+          
+          <text x="40" y="-15" fill="#aaa" fontSize="14" textAnchor="middle" fontWeight="bold">T</text>
+          <text x="40" y="5" fill="#888" fontSize="10" textAnchor="middle" fontWeight="bold">°C</text>
+
+          {/* ----- NEEDLES ----- */}
+          {/* Left Needle (pointing to 0) */}
+          <g transform={`rotate(${leftAngle(0)})`}>
+            <line x1="2" y1="15" x2="2" y2="-72" stroke="rgba(0,0,0,0.5)" strokeWidth="4" />
+            <line x1="0" y1="15" x2="0" y2="-72" stroke="#fff" strokeWidth="3" strokeLinecap="round" />
+            <polygon points="-2,-60 0,-75 2,-60" fill="#fff" />
+          </g>
+
+          {/* Right Needle (pointing to -70) */}
+          <g transform={`rotate(${rightAngle(-70)})`}>
+            <line x1="2" y1="15" x2="2" y2="-72" stroke="rgba(0,0,0,0.5)" strokeWidth="4" />
+            <line x1="0" y1="15" x2="0" y2="-72" stroke="#fff" strokeWidth="3" strokeLinecap="round" />
+            <polygon points="-2,-60 0,-75 2,-60" fill="#fff" />
+          </g>
+
+          {/* Shared Center pivot cap */}
+          <circle cx="0" cy="0" r="12" fill="#111" stroke="#333" strokeWidth="2" />
+          <circle cx="0" cy="0" r="6" fill="#000" />
+        </g>
+      </svg>
+      
+      {/* Glass glare */}
+      <div className="absolute inset-2 rounded-full bg-gradient-to-tr from-transparent via-[rgba(255,255,255,0.02)] to-[rgba(255,255,255,0.15)] pointer-events-none"></div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/Panel.tsx">
+import React from "react";
+import Screw from "./Screw";
+
+interface PanelProps {
+  children?: React.ReactNode;
+  className?: string;
+  hasScrews?: boolean;
+}
+
+export default function Panel({
+  children,
+  className = "",
+  hasScrews = false,
+}: PanelProps) {
+  return (
+    <div
+      className={`relative bg-[#344a5e] border-t-[#4c6780] border-l-[#4c6780] border-b-[#1b2733] border-r-[#1b2733] border-[3px] shadow-[inset_0_0_10px_rgba(0,0,0,0.2),0_4px_10px_rgba(0,0,0,0.5)] overflow-hidden ${className}`}
+    >
+      {/* Noise Texture Overlay */}
+      <div 
+        className="absolute inset-0 pointer-events-none opacity-[0.15] mix-blend-overlay z-0"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
+        }}
+      />
+      {/* Screws positioned on the outer frame */}
+      {hasScrews && (
+        <div className="absolute inset-0 pointer-events-none z-20">
+          <div className="absolute top-2 left-2 pointer-events-auto"><Screw /></div>
+          <div className="absolute top-2 right-2 pointer-events-auto"><Screw /></div>
+          <div className="absolute bottom-2 left-2 pointer-events-auto"><Screw /></div>
+          <div className="absolute bottom-2 right-2 pointer-events-auto"><Screw /></div>
+        </div>
+      )}
+
+      {/* Content Container to keep it above noise */}
+      <div className="relative z-10 w-full h-full flex flex-col">
+        {children}
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/RPMGauge.tsx">
+import React from 'react';
+import GaugeScrew from "./GaugeScrew";
+
+function describeArc(x: number, y: number, radius: number, startAngle: number, endAngle: number) {
+  const polarToCartesian = (centerX: number, centerY: number, rad: number, angleInDegrees: number) => {
+    const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
+    return {
+      x: centerX + (rad * Math.cos(angleInRadians)),
+      y: centerY + (rad * Math.sin(angleInRadians))
+    };
+  }
+  const start = polarToCartesian(x, y, radius, endAngle);
+  const end = polarToCartesian(x, y, radius, startAngle);
+  const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+  return [
+    "M", start.x, start.y, 
+    "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y
+  ].join(" ");
+}
+
+export default function RPMGauge({ className = "w-48 h-48 md:w-56 md:h-56", hideLeftScrews = false, hideRightScrews = false }: { className?: string; hideLeftScrews?: boolean; hideRightScrews?: boolean }) {
+  // Scale 0 to 100.
+  // -135 deg to 135 deg = 270 deg total.
+  // 270 / 100 = 2.7 deg per unit.
+  const getAngle = (val: number) => -135 + val * 2.7;
+
+  return (
+    <div className={`relative rounded-full bg-[#1b2228] border-[3px] border-[#111] shadow-[inset_0_0_20px_rgba(0,0,0,0.8),0_4px_10px_rgba(0,0,0,0.5)] flex items-center justify-center shrink-0 ${className}`}>
+      {/* Outer bezel ring */}
+      <div className="absolute inset-0 rounded-full border-[3px] border-[#3a4a5a] opacity-50 pointer-events-none"></div>
+      
+      {/* Screw holes */}
+      {!hideLeftScrews && <GaugeScrew className="-top-2 left-1" />}
+      {!hideRightScrews && <GaugeScrew className="-top-2 right-1" />}
+      {!hideLeftScrews && <GaugeScrew className="-bottom-2 left-1" />}
+      {!hideRightScrews && <GaugeScrew className="-bottom-2 right-1" />}
+
+      <svg width="100%" height="100%" viewBox="0 0 200 200" className="absolute inset-0">
+        <g transform="translate(100, 100)">
+          {/* Green Arc from 60 to 100 */}
+          <path d={describeArc(0, 0, 80, getAngle(60), getAngle(100))} fill="none" stroke="#22cc33" strokeWidth="4" />
+          
+          {/* Yellow Arc from 80 to 100 (slightly outside) */}
+          <path d={describeArc(0, 0, 86, getAngle(80), getAngle(100))} fill="none" stroke="#ffcc00" strokeWidth="4" />
+
+          {/* Orange Triangle at 100 */}
+          <g transform={`rotate(${getAngle(100)})`}>
+            <polygon points="-4,-96 4,-96 0,-86" fill="#ff7700" />
+          </g>
+
+          {/* Tick marks. 0 to 100 every 5 units */}
+          {Array.from({ length: 21 }).map((_, i) => {
+            const val = i * 5;
+            const angle = getAngle(val);
+            const isMajor = val % 20 === 0;
+            return (
+              <line
+                key={`tick-${i}`}
+                x1="0" y1={isMajor ? "-82" : "-82"} x2="0" y2={isMajor ? "-70" : "-76"}
+                stroke="#fff" strokeWidth={isMajor ? "2.5" : "1.5"}
+                transform={`rotate(${angle})`}
+              />
+            );
+          })}
+          
+          {/* Numbers: 0, 20, 40, 60, 80, 100 */}
+          {[0, 20, 40, 60, 80, 100].map((num) => {
+            const angle = getAngle(num);
+            const rad = (angle - 90) * (Math.PI / 180);
+            const r = 55;
+            const x = Math.cos(rad) * r;
+            const y = Math.sin(rad) * r;
+            return (
+              <text
+                key={num}
+                x={x} y={y}
+                fill="#fff" fontSize="16" fontFamily="sans-serif" fontWeight="bold"
+                textAnchor="middle" alignmentBaseline="middle"
+              >
+                {num}
+              </text>
+            );
+          })}
+
+          {/* Texts */}
+          <text x="0" y="30" fill="#fff" fontSize="12" textAnchor="middle" fontWeight="bold" letterSpacing="0.5">% RPM</text>
+
+          {/* Needle - pointing to 0 */}
+          <g transform={`rotate(${getAngle(0)})`}>
+            <line x1="2" y1="10" x2="2" y2="-75" stroke="rgba(0,0,0,0.5)" strokeWidth="4" />
+            <line x1="0" y1="10" x2="0" y2="-75" stroke="#fff" strokeWidth="4" strokeLinecap="round" />
+            <polygon points="-3,-65 0,-85 3,-65" fill="#fff" />
+          </g>
+
+          {/* Center cap */}
+          <circle cx="0" cy="0" r="10" fill="#111" stroke="#333" strokeWidth="2" />
+          <circle cx="0" cy="0" r="5" fill="#000" />
+        </g>
+      </svg>
+      
+      {/* Digital Readout overlay */}
+      <div className="absolute bottom-[10%] left-1/2 transform -translate-x-1/2 bg-[#050505] border-[1.5px] border-[#333] rounded-[3px] px-2 py-[2px] shadow-[inset_0_0_8px_rgba(0,0,0,1)] flex items-center justify-center">
+        <span className="text-[#ff7700] font-mono text-sm md:text-base font-bold tracking-widest drop-shadow-[0_0_4px_rgba(255,119,0,0.8)] leading-none">0.0</span>
+      </div>
+
+      {/* Glass glare */}
+      <div className="absolute inset-2 rounded-full bg-gradient-to-tr from-transparent via-[rgba(255,255,255,0.02)] to-[rgba(255,255,255,0.15)] pointer-events-none"></div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/Screw.tsx">
+export default function Screw({ className = "" }: { className?: string }) {
+  return (
+    <div
+      className={`w-4 h-4 rounded-full bg-gradient-to-br from-[#718096] to-[#2d3748] border border-[#1a202c] flex items-center justify-center shadow-[inset_0_1px_2px_rgba(255,255,255,0.3),0_1px_3px_rgba(0,0,0,0.8)] relative ${className}`}
+    >
+      {/* Phillips cross slot */}
+      <div className="absolute w-2 h-[1px] bg-[#111] rotate-45 opacity-80 shadow-[0_1px_0_rgba(255,255,255,0.2)] rounded-sm"></div>
+      <div className="absolute w-2 h-[1px] bg-[#111] -rotate-45 opacity-80 shadow-[0_1px_0_rgba(255,255,255,0.2)] rounded-sm"></div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/ScrollReset.tsx">
+"use client";
+
+import { useEffect } from "react";
+
+export default function ScrollReset() {
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const previous = window.history.scrollRestoration;
+    window.history.scrollRestoration = "manual";
+    window.scrollTo(0, 0);
+
+    return () => {
+      window.history.scrollRestoration = previous;
+    };
+  }, []);
+
+  return null;
+}
+</file>
+
+<file path="src/components/SystemControls.tsx">
+"use client";
+
+import React from "react";
+import { useSimulator } from "@/context/SimulatorContext";
+
+export default function SystemControls() {
+  const sim = useSimulator();
+
+  return (
+    <div className="mt-2 p-2.5 bg-[#162026] rounded border border-[#0f1720] text-xs md:text-sm text-[#cbd7e0]">
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-2 xl:gap-3 items-end">
+        {/* Refuel */}
+        <div className="space-y-1">
+          <div className="text-[10px] md:text-xs text-[#9fb0c2]">Refuel Valve</div>
+          <button
+            onClick={() => sim.setRefuelValveOpen(!sim.refuelValveOpen)}
+            className={`w-full px-2 py-1.5 rounded font-bold ${sim.refuelValveOpen ? 'bg-[#2266ff] text-white' : 'bg-[#1a2a34] text-[#9fb0c2]'}`}
+          >
+            {sim.refuelValveOpen ? 'Valve OPEN' : 'Open Valve'}
+          </button>
+        </div>
+
+        {/* Battery Temp */}
+        <div className="space-y-1">
+          <div className="text-[10px] md:text-xs text-[#9fb0c2]">Battery Temp (°C)</div>
+          <div className="flex items-center gap-2">
+            <input
+              type="range"
+              min={0}
+              max={120}
+              value={sim.batteryTempC}
+              onChange={(e) => sim.setBatteryTempC(Number(e.target.value))}
+              className="w-full"
+            />
+            <div className="w-12 text-right">{sim.batteryTempC}°</div>
+          </div>
+        </div>
+
+        {/* Fuel Pressure */}
+        <div className="space-y-1">
+          <div className="text-[10px] md:text-xs text-[#9fb0c2]">Fuel Pressure (psi)</div>
+          <div className="flex items-center gap-2">
+            <button onClick={() => sim.setFuelPressurePsi(Math.max(0, sim.fuelPressurePsi - 1))} className="px-2 py-1 bg-[#1a2a34] rounded text-xs">-</button>
+            <div className="flex-1">
+              <input type="range" min={0} max={30} value={sim.fuelPressurePsi} onChange={(e) => sim.setFuelPressurePsi(Number(e.target.value))} className="w-full" />
+            </div>
+            <button onClick={() => sim.setFuelPressurePsi(Math.min(100, sim.fuelPressurePsi + 1))} className="px-2 py-1 bg-[#1a2a34] rounded text-xs">+</button>
+          </div>
+          <div className="text-[10px] md:text-xs">{sim.fuelPressurePsi} psi {sim.fuelPressureWarning ? '(LOW - warning)' : ''}</div>
+        </div>
+
+        {/* Inlet De-ice */}
+        <div className="space-y-1">
+          <div className="text-[10px] md:text-xs text-[#9fb0c2]">Inlet De-ice</div>
+          <button
+            onClick={() => sim.setInletDeIceOn(!sim.inletDeIceOn)}
+            className={`w-full px-2 py-1.5 rounded font-bold ${sim.inletDeIceOn ? 'bg-[#ffaa22] text-black' : 'bg-[#1a2a34] text-[#9fb0c2]'}`}
+          >
+            {sim.inletDeIceOn ? 'ANTI-ICE ON' : 'ANTI-ICE OFF'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/TorqueGauge.tsx">
+import React from 'react';
+import GaugeScrew from "./GaugeScrew";
+
+export default function TorqueGauge({ className = "w-48 h-48 md:w-56 md:h-56", hideLeftScrews = false, hideRightScrews = false }: { className?: string; hideLeftScrews?: boolean; hideRightScrews?: boolean }) {
+  return (
+    <div className={`relative rounded-full bg-[#1b2228] border-[3px] border-[#111] shadow-[inset_0_0_20px_rgba(0,0,0,0.8),0_4px_10px_rgba(0,0,0,0.5)] flex items-center justify-center shrink-0 ${className}`}>
+      {/* Outer bezel ring */}
+      <div className="absolute inset-0 rounded-full border-[3px] border-[#3a4a5a] opacity-50 pointer-events-none"></div>
+      
+      {/* Screw holes on the gauge itself */}
+      {!hideLeftScrews && <GaugeScrew className="-top-2 left-1" />}
+      {!hideRightScrews && <GaugeScrew className="-top-2 right-1" />}
+      {!hideLeftScrews && <GaugeScrew className="-bottom-2 left-1" />}
+      {!hideRightScrews && <GaugeScrew className="-bottom-2 right-1" />}
+
+      <svg width="100%" height="100%" viewBox="0 0 200 200" className="absolute inset-0">
+        <g transform="translate(100, 100)">
+          {/* Green Arc from 20 (-90 deg) to 100 (90 deg) at radius 82 */}
+          <path d="M -82 0 A 82 82 0 0 1 82 0" fill="none" stroke="#22cc33" strokeWidth="4" />
+          
+          {/* Red line at 100 (90 deg) */}
+          <line x1="0" y1="-85" x2="0" y2="-70" stroke="#ff3333" strokeWidth="4" transform="rotate(90)" />
+
+          {/* Tick marks. 0 to 120 -> 120 units. 270 deg / 120 = 2.25 deg/unit. */}
+          {Array.from({ length: 13 }).map((_, i) => {
+            const num = i * 10;
+            const angle = -135 + num * 2.25;
+            const isMajor = num % 20 === 0;
+            return (
+              <line
+                key={i}
+                x1="0"
+                y1={isMajor ? "-82" : "-82"}
+                x2="0"
+                y2={isMajor ? "-70" : "-76"}
+                stroke="#fff"
+                strokeWidth={isMajor ? "2.5" : "1.5"}
+                transform={`rotate(${angle})`}
+              />
+            );
+          })}
+          
+          {/* Numbers: 0, 20, 40, 60, 80, 100, 120 */}
+          {[0, 20, 40, 60, 80, 100, 120].map((num) => {
+            const angle = -135 + num * 2.25;
+            // Radius for text placement: 55
+            const rad = (angle - 90) * (Math.PI / 180);
+            const x = Math.cos(rad) * 55;
+            const y = Math.sin(rad) * 55;
+            return (
+              <text
+                key={num}
+                x={x}
+                y={y}
+                fill="#fff"
+                fontSize="16"
+                fontFamily="sans-serif"
+                fontWeight="bold"
+                textAnchor="middle"
+                alignmentBaseline="middle"
+              >
+                {num}
+              </text>
+            );
+          })}
+
+          {/* Texts */}
+          <text x="0" y="-15" fill="#fff" fontSize="14" textAnchor="middle" fontWeight="bold" letterSpacing="0.5">TORQUE</text>
+          <text x="0" y="45" fill="#fff" fontSize="14" textAnchor="middle" fontWeight="bold">%</text>
+          
+          {/* 'OFF' label near 0 tick. 0 is at -135 deg. We'll place it at radius 65, angle -150 */}
+          <text x="-56" y="32" fill="#fff" fontSize="10" fontWeight="bold" textAnchor="middle">OFF</text>
+
+          {/* Needle - pointing to 0 */}
+          <g transform={`rotate(${-135})`}>
+            <line x1="2" y1="10" x2="2" y2="-75" stroke="rgba(0,0,0,0.5)" strokeWidth="4" />
+            <line x1="0" y1="10" x2="0" y2="-75" stroke="#fff" strokeWidth="4" strokeLinecap="round" />
+            <polygon points="-3,-65 0,-85 3,-65" fill="#fff" />
+          </g>
+
+          {/* Center cap */}
+          <circle cx="0" cy="0" r="10" fill="#111" stroke="#333" strokeWidth="2" />
+          <circle cx="0" cy="0" r="5" fill="#000" />
+        </g>
+      </svg>
+      
+      {/* Glass glare */}
+      <div className="absolute inset-2 rounded-full bg-gradient-to-tr from-transparent via-[rgba(255,255,255,0.02)] to-[rgba(255,255,255,0.15)] pointer-events-none"></div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/WarningLight.tsx">
+"use client";
+
+import React, { useState } from 'react';
+
+type LightStatus = 'off' | 'amber' | 'red';
+
+interface WarningLightProps {
+  label: string | string[];
+  status?: LightStatus;
+  // If provided, forces the lamp visual on/off. When defined, disables click toggling.
+  forcedOn?: boolean;
+}
+
+// Preload the audio object once for the entire module to eliminate playback delay
+let buttonAudio: HTMLAudioElement | null = null;
+if (typeof window !== 'undefined') {
+  buttonAudio = new Audio('/assets/button.mp3');
+  buttonAudio.preload = "auto";
+}
+
+export default function WarningLight({ label, status = 'off', forcedOn }: WarningLightProps) {
+  const [isOn, setIsOn] = useState(false);
+
+  const isInteractive = status !== 'off' && forcedOn === undefined;
+
+  // Base styles including elevation logic
+  let baseStyles = `relative flex flex-col items-center justify-center p-1 min-h-[48px] md:min-h-[60px] rounded-[5px] transition-all duration-100 overflow-hidden select-none border-[1.5px] `;
+  
+  if (isInteractive) {
+    baseStyles += "cursor-pointer ";
+    if (!isOn) {
+      baseStyles += "active:translate-y-[3px] active:shadow-none ";
+    }
+  }
+
+  const displayOn = forcedOn !== undefined ? forcedOn : isOn;
+
+  if (displayOn) {
+    baseStyles += "translate-y-[3px] ";
+  }
+
+  // Styling based on status
+  let stateStyles = "";
+  let textStyles = "";
+  
+  if (!displayOn) {
+    // Unclicked state: Elevated, dark background, original glowing text colors
+    const elevationShadow = "shadow-[0_4px_0_#050505,0_5px_8px_rgba(0,0,0,0.6)]";
+    if (status === 'red') {
+      stateStyles = `bg-[#141618] border-[#333] border-b-[#0a0a0a] ${elevationShadow}`;
+      textStyles = "text-[#ff2222] font-bold drop-shadow-[0_0_6px_rgba(255,34,34,0.9)]";
+    } else if (status === 'amber') {
+      stateStyles = `bg-[#141618] border-[#333] border-b-[#0a0a0a] ${elevationShadow}`;
+      textStyles = "text-[#ff8800] font-bold drop-shadow-[0_0_6px_rgba(255,136,0,0.9)]";
+    } else {
+      stateStyles = `bg-[#141618] border-[#2a2a2a] border-b-[#0a0a0a] ${elevationShadow}`;
+      textStyles = "text-[#555] opacity-20 font-bold drop-shadow-none";
+    }
+  } else {
+    // Clicked state: Depressed, dark background with faint inner color glow (light from behind)
+    if (status === 'red') {
+      stateStyles = "bg-[#2a1111] border-[#551111] shadow-[inset_0_0_30px_rgba(255,0,0,0.4)]";
+      textStyles = "text-[#ff4444] font-extrabold drop-shadow-[0_0_12px_rgba(255,30,30,1)]";
+    } else if (status === 'amber') {
+      stateStyles = "bg-[#2a1c0d] border-[#663300] shadow-[inset_0_0_30px_rgba(255,120,0,0.4)]";
+      textStyles = "text-[#ffaa00] font-extrabold drop-shadow-[0_0_12px_rgba(255,150,0,1)]";
+    }
+  }
+
+  const labelArray = Array.isArray(label) ? label : [label];
+
+  const handleClick = () => {
+    if (isInteractive) {
+      setIsOn(!isOn);
+      // Play preloaded button click sound instantly
+      if (buttonAudio) {
+        buttonAudio.currentTime = 0;
+        buttonAudio.volume = 1.0;
+        buttonAudio.play().catch((e) => console.log("Button audio failed", e));
+      }
+    }
+  };
+
+  return (
+    <div
+      className={`${baseStyles} ${stateStyles}`}
+      onClick={handleClick}
+    >
+      {/* Plastic/Noise Texture Overlay */}
+      <div 
+        className="absolute inset-0 pointer-events-none opacity-[0.8] mix-blend-overlay z-0"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
+        }}
+      />
+      
+      {/* Matte finish: No glossy overlay */}
+      
+      <div className="relative z-10 flex flex-col items-center justify-center w-full h-full">
+        {labelArray.map((line, idx) => (
+          <span key={idx} className={`text-[10px] md:text-sm leading-none text-center uppercase font-sans tracking-wide ${textStyles}`}>
+            {line}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/context/SimulatorContext.tsx">
+"use client";
+
+import React, { createContext, useContext, useEffect, useState } from "react";
+
+type SimulatorState = {
+  // Refuel
+  refuelValveOpen: boolean;
+  setRefuelValveOpen: (v: boolean) => void;
+  refuelWarning: boolean;
+
+  // Fuel pressure
+  fuelPressurePsi: number;
+  setFuelPressurePsi: (v: number) => void;
+  fuelPressureWarning: boolean;
+
+  // Inlet de-ice
+  inletDeIceOn: boolean;
+  setInletDeIceOn: (v: boolean) => void;
+  inletDeIceWarning: boolean;
+
+  // Battery temp
+  batteryTempC: number;
+  setBatteryTempC: (v: number) => void;
+  batteryOverheat: boolean;
+};
+
+const SimulatorContext = createContext<SimulatorState | null>(null);
+
+export function SimulatorProvider({ children }: { children: React.ReactNode }) {
+  // Refuel
+  const [refuelValveOpen, setRefuelValveOpen] = useState(false);
+  const refuelWarning = refuelValveOpen; // micro-switch simulated directly
+
+  // Fuel pressure with simple hysteresis logic
+  const [fuelPressurePsi, setFuelPressurePsiState] = useState(20);
+  const [fuelPressureWarning, setFuelPressureWarning] = useState(false);
+
+  useEffect(() => {
+    const p = fuelPressurePsi;
+    setFuelPressureWarning((prev) => {
+      if (p < 8) return true;
+      if (p > 15) return false;
+      return prev;
+    });
+  }, [fuelPressurePsi]);
+
+  const setFuelPressurePsi = (v: number) => setFuelPressurePsiState(v);
+
+  // Inlet de-ice
+  const [inletDeIceOn, setInletDeIceOn] = useState(false);
+  const inletDeIceWarning = inletDeIceOn; // micro-switch closes when valve opens
+
+  // Battery temp
+  const [batteryTempC, setBatteryTempCState] = useState(25);
+  const batteryOverheat = batteryTempC >= 71;
+
+  const setBatteryTempC = (v: number) => setBatteryTempCState(v);
+
+  return (
+    <SimulatorContext.Provider
+      value={{
+        refuelValveOpen,
+        setRefuelValveOpen,
+        refuelWarning,
+        fuelPressurePsi,
+        setFuelPressurePsi,
+        fuelPressureWarning,
+        inletDeIceOn,
+        setInletDeIceOn,
+        inletDeIceWarning,
+        batteryTempC,
+        setBatteryTempC,
+        batteryOverheat,
+      }}
+    >
+      {children}
+    </SimulatorContext.Provider>
+  );
+}
+
+export function useSimulator() {
+  const ctx = useContext(SimulatorContext);
+  if (!ctx) throw new Error("useSimulator must be used inside SimulatorProvider");
+  return ctx;
+}
+</file>
+
+<file path="public/file.svg">
+<svg fill="none" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14.5 13.5V5.41a1 1 0 0 0-.3-.7L9.8.29A1 1 0 0 0 9.08 0H1.5v13.5A2.5 2.5 0 0 0 4 16h8a2.5 2.5 0 0 0 2.5-2.5m-1.5 0v-7H8v-5H3v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1M9.5 5V2.12L12.38 5zM5.13 5h-.62v1.25h2.12V5zm-.62 3h7.12v1.25H4.5zm.62 3h-.62v1.25h7.12V11z" clip-rule="evenodd" fill="#666" fill-rule="evenodd"/></svg>
+</file>
+
+<file path="public/globe.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><g clip-path="url(#a)"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.27 14.1a6.5 6.5 0 0 0 3.67-3.45q-1.24.21-2.7.34-.31 1.83-.97 3.1M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.48-1.52a7 7 0 0 1-.96 0H7.5a4 4 0 0 1-.84-1.32q-.38-.89-.63-2.08a40 40 0 0 0 3.92 0q-.25 1.2-.63 2.08a4 4 0 0 1-.84 1.31zm2.94-4.76q1.66-.15 2.95-.43a7 7 0 0 0 0-2.58q-1.3-.27-2.95-.43a18 18 0 0 1 0 3.44m-1.27-3.54a17 17 0 0 1 0 3.64 39 39 0 0 1-4.3 0 17 17 0 0 1 0-3.64 39 39 0 0 1 4.3 0m1.1-1.17q1.45.13 2.69.34a6.5 6.5 0 0 0-3.67-3.44q.65 1.26.98 3.1M8.48 1.5l.01.02q.41.37.84 1.31.38.89.63 2.08a40 40 0 0 0-3.92 0q.25-1.2.63-2.08a4 4 0 0 1 .85-1.32 7 7 0 0 1 .96 0m-2.75.4a6.5 6.5 0 0 0-3.67 3.44 29 29 0 0 1 2.7-.34q.31-1.83.97-3.1M4.58 6.28q-1.66.16-2.95.43a7 7 0 0 0 0 2.58q1.3.27 2.95.43a18 18 0 0 1 0-3.44m.17 4.71q-1.45-.12-2.69-.34a6.5 6.5 0 0 0 3.67 3.44q-.65-1.27-.98-3.1" fill="#666"/></g><defs><clipPath id="a"><path fill="#fff" d="M0 0h16v16H0z"/></clipPath></defs></svg>
+</file>
+
+<file path="public/next.svg">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 394 80"><path fill="#000" d="M262 0h68.5v12.7h-27.2v66.6h-13.6V12.7H262V0ZM149 0v12.7H94v20.4h44.3v12.6H94v21h55v12.6H80.5V0h68.7zm34.3 0h-17.8l63.8 79.4h17.9l-32-39.7 32-39.6h-17.9l-23 28.6-23-28.6zm18.3 56.7-9-11-27.1 33.7h17.8l18.3-22.7z"/><path fill="#000" d="M81 79.3 17 0H0v79.3h13.6V17l50.2 62.3H81Zm252.6-.4c-1 0-1.8-.4-2.5-1s-1.1-1.6-1.1-2.6.3-1.8 1-2.5 1.6-1 2.6-1 1.8.3 2.5 1a3.4 3.4 0 0 1 .6 4.3 3.7 3.7 0 0 1-3 1.8zm23.2-33.5h6v23.3c0 2.1-.4 4-1.3 5.5a9.1 9.1 0 0 1-3.8 3.5c-1.6.8-3.5 1.3-5.7 1.3-2 0-3.7-.4-5.3-1s-2.8-1.8-3.7-3.2c-.9-1.3-1.4-3-1.4-5h6c.1.8.3 1.6.7 2.2s1 1.2 1.6 1.5c.7.4 1.5.5 2.4.5 1 0 1.8-.2 2.4-.6a4 4 0 0 0 1.6-1.8c.3-.8.5-1.8.5-3V45.5zm30.9 9.1a4.4 4.4 0 0 0-2-3.3 7.5 7.5 0 0 0-4.3-1.1c-1.3 0-2.4.2-3.3.5-.9.4-1.6 1-2 1.6a3.5 3.5 0 0 0-.3 4c.3.5.7.9 1.3 1.2l1.8 1 2 .5 3.2.8c1.3.3 2.5.7 3.7 1.2a13 13 0 0 1 3.2 1.8 8.1 8.1 0 0 1 3 6.5c0 2-.5 3.7-1.5 5.1a10 10 0 0 1-4.4 3.5c-1.8.8-4.1 1.2-6.8 1.2-2.6 0-4.9-.4-6.8-1.2-2-.8-3.4-2-4.5-3.5a10 10 0 0 1-1.7-5.6h6a5 5 0 0 0 3.5 4.6c1 .4 2.2.6 3.4.6 1.3 0 2.5-.2 3.5-.6 1-.4 1.8-1 2.4-1.7a4 4 0 0 0 .8-2.4c0-.9-.2-1.6-.7-2.2a11 11 0 0 0-2.1-1.4l-3.2-1-3.8-1c-2.8-.7-5-1.7-6.6-3.2a7.2 7.2 0 0 1-2.4-5.7 8 8 0 0 1 1.7-5 10 10 0 0 1 4.3-3.5c2-.8 4-1.2 6.4-1.2 2.3 0 4.4.4 6.2 1.2 1.8.8 3.2 2 4.3 3.4 1 1.4 1.5 3 1.5 5h-5.8z"/></svg>
+</file>
+
+<file path="public/vercel.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1155 1000"><path d="m577.3 0 577.4 1000H0z" fill="#fff"/></svg>
+</file>
+
+<file path="public/window.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 2.5h13v10a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1zM0 1h16v11.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 0 12.5zm3.75 4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5M7 4.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0m1.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5" fill="#666"/></svg>
+</file>
+
+<file path="src/app/globals.css">
+@import "tailwindcss";
+
+body {
+  background-color: #2a3a4c;
+  color: #e2e8f0;
+  font-family: var(--font-roboto), sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Custom Industrial Scrollbar */
+.scrollbar-custom::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: #0d1418;
+  border-radius: 3px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background: #2a4a6a;
+  border-radius: 3px;
+  border: 1px solid #1a2530;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background: #3a5a7a;
+}
+
+/* For Firefox */
+.scrollbar-custom {
+  scrollbar-width: thin;
+  scrollbar-color: #2a4a6a #0d1418;
+}
+</file>
+
+<file path="src/app/layout.tsx">
+import type { Metadata } from "next";
+import { Roboto } from "next/font/google";
+import "./globals.css";
+
+const roboto = Roboto({
+  weight: ["100", "300", "400", "500", "700", "900"],
+  subsets: ["latin"],
+  variable: "--font-roboto",
+});
+
+export const metadata: Metadata = {
+  title: "Create Next App",
+  description: "Generated by create next app",
+};
+
+import GlobalAudio from "@/components/GlobalAudio";
+import ScrollReset from "@/components/ScrollReset";
+import { SimulatorProvider } from '@/context/SimulatorContext';
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html
+      lang="en"
+      className={`${roboto.variable} h-full antialiased`}
+    >
+      <body className={`${roboto.className} min-h-full flex flex-col font-sans`}>
+        <SimulatorProvider>
+          <ScrollReset />
+          <GlobalAudio />
+          {children}
+        </SimulatorProvider>
+      </body>
+    </html>
+  );
+}
+</file>
+
+<file path="src/app/page.tsx">
+import Navbar from "@/components/Navbar";
+import Panel from "@/components/Panel";
+import AnnunciatorPanel from "@/components/AnnunciatorPanel";
+import SystemControls from "@/components/SystemControls";
+import FuelGauge from "@/components/FuelGauge";
+import TorqueGauge from "@/components/TorqueGauge";
+import ITTGauge from "@/components/ITTGauge";
+import FuelFlowGauge from "@/components/FuelFlowGauge";
+import RPMGauge from "@/components/RPMGauge";
+import OilGauge from "@/components/OilGauge";
+import FuelTankSwitches from "@/components/FuelTankSwitches";
+import CockpitChat from "@/components/CockpitChat";
+
+export default function Home() {
+  return (
+    <main className="min-h-dvh w-full flex flex-col bg-[#2a3a4c] overflow-y-auto">
+      <Navbar />
+
+      {/* Main Dashboard Area - Constrained to remaining height */}
+      <div className="p-2 pb-4 w-full grid grid-cols-1 md:grid-cols-[1fr_2.5fr_1fr] gap-2">
+
+        {/* Left Vertical Panel */}
+        <Panel hasScrews className="w-full flex flex-col items-center justify-center p-4 md:p-5 min-h-0 md:min-h-[340px]">
+          {/* Left Panel Gauges */}
+          <div className="grid grid-cols-2 gap-x-2 gap-y-16 md:gap-y-14 w-full place-items-center place-content-center">
+            <TorqueGauge className="w-full aspect-square" hideRightScrews />
+            <ITTGauge className="w-full aspect-square" hideLeftScrews />
+            <FuelFlowGauge className="w-full aspect-square" hideRightScrews />
+            <RPMGauge className="w-full aspect-square" hideLeftScrews />
+            <OilGauge className="w-full aspect-square" hideRightScrews />
+            {/* LED Indicators */}
+            <div className="w-full aspect-square flex flex-col items-center justify-center gap-8">
+              {/* Blue LED */}
+              <div className="relative flex items-center justify-center">
+                {/* Glow spread - separate element so it's not clipped */}
+                <div className="absolute w-20 h-20 md:w-24 md:h-24 rounded-full bg-[#2266ff] opacity-40 blur-xl pointer-events-none"></div>
+                <div className="absolute w-12 h-12 md:w-14 md:h-14 rounded-full bg-[#2266ff] opacity-50 blur-md pointer-events-none"></div>
+                {/* Housing */}
+                <div className="relative w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#0a0e18] border-[2px] border-[#222] flex items-center justify-center z-10">
+                  <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-[#3388ff] shadow-[0_0_6px_#3388ff,0_0_12px_#2266ff] relative">
+                    <div className="absolute top-[15%] left-[25%] w-[25%] h-[25%] rounded-full bg-white opacity-80"></div>
+                  </div>
+                </div>
+              </div>
+              {/* Orange LED */}
+              <div className="relative flex items-center justify-center">
+                {/* Glow spread */}
+                <div className="absolute w-20 h-20 md:w-24 md:h-24 rounded-full bg-[#ff8800] opacity-40 blur-xl pointer-events-none"></div>
+                <div className="absolute w-12 h-12 md:w-14 md:h-14 rounded-full bg-[#ff8800] opacity-50 blur-md pointer-events-none"></div>
+                {/* Housing */}
+                <div className="relative w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#1a1208] border-[2px] border-[#222] flex items-center justify-center z-10">
+                  <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-[#ffaa22] shadow-[0_0_6px_#ffaa22,0_0_12px_#ff8800] relative">
+                    <div className="absolute top-[15%] left-[25%] w-[25%] h-[25%] rounded-full bg-white opacity-80"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Panel>
+
+        {/* Center Horizontal Stack */}
+        <div className="flex flex-col gap-2 w-full">
+          {/* Top Center Panel */}
+          <Panel hasScrews className="w-full p-4 md:p-5 flex flex-col items-center justify-center min-h-0 md:min-h-[300px]">
+            {/* Caution Placard */}
+            <div className="bg-[#2a3c75] border-[1.5px] border-[#182352] text-white text-lg md:text-xl px-18 py-1.5 md:py-4 mb-4 shadow-[inset_0_1px_3px_rgba(255,255,255,0.2),0_2px_4px_rgba(0,0,0,0.6)] font-semibold tracking-widest relative flex items-center justify-center">
+              {/* Inset white border */}
+              <div className="absolute inset-1.5 md:inset-2 border-[1.5px] border-white/60 pointer-events-none z-0"></div>
+              <span className="relative z-10 text-center">CAUTION: DO NOT OPERATE ANY BRAKE DURING TOWING</span>
+            </div>
+            <AnnunciatorPanel />
+            <SystemControls />
+          </Panel>
+
+          {/* Bottom Center Panel */}
+          <Panel hasScrews className="w-full p-4 md:p-5 min-h-[200px] md:min-h-[260px]">
+            <div className="flex flex-row items-center justify-between w-full h-full px-4">
+              <FuelGauge bottomTextSize={14} />
+              {/* Fuel Tank Switches */}
+              <div className="flex-1 h-full mx-4 md:mx-6 flex items-center justify-center">
+                <FuelTankSwitches />
+              </div>
+              <FuelGauge bottomTextSize={14} />
+            </div>
+          </Panel>
+        </div>
+
+        {/* Right Vertical Panel - Chat */}
+        <Panel hasScrews className="w-full flex flex-col p-0 min-h-[240px] md:min-h-[340px] overflow-hidden">
+          <CockpitChat />
+        </Panel>
+
+      </div>
+    </main>
+  );
+}
+</file>
+
+<file path=".gitignore">
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+</file>
+
+<file path="AGENTS.md">
+<!-- BEGIN:nextjs-agent-rules -->
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
+<!-- END:nextjs-agent-rules -->
+</file>
+
+<file path="CLAUDE.md">
+@AGENTS.md
+</file>
+
+<file path="eslint.config.mjs">
+import { defineConfig, globalIgnores } from "eslint/config";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
+
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  // Override default ignores of eslint-config-next.
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+  ]),
+]);
+
+export default eslintConfig;
+</file>
+
+<file path="next.config.ts">
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  /* config options here */
+};
+
+export default nextConfig;
+</file>
+
+<file path="package.json">
+{
+  "name": "cpit",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "next": "16.2.6",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.6",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
+</file>
+
+<file path="postcss.config.mjs">
+const config = {
+  plugins: {
+    "@tailwindcss/postcss": {},
+  },
+};
+
+export default config;
+</file>
+
+<file path="README.md">
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+## Getting Started
+
+First, run the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+</file>
+
+<file path="tsconfig.json">
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": ["node_modules"]
+}
+</file>
+
+</files>

@@ -1,0 +1,433 @@
+"use client";
+
+import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
+import Panel from './Panel';
+import { useSimulator } from '@/context/SimulatorContext';
+import { playGlobalClickSound } from '@/utils/audio';
+
+export default function SchematicModal({
+  isOpen,
+  onClose,
+  schematicId
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  schematicId: string | null;
+}) {
+  const sim = useSimulator();
+  const [mounted, setMounted] = useState(false);
+  const [rightOffset, setRightOffset] = useState(0);
+
+  useEffect(() => {
+    setMounted(true);
+    const updateOffset = () => {
+      const rightPanel = document.getElementById('right-panel');
+      if (rightPanel && window.innerWidth >= 768) {
+        const rect = rightPanel.getBoundingClientRect();
+        setRightOffset(window.innerWidth - rect.left + 8);
+      } else {
+        setRightOffset(0);
+      }
+    };
+    updateOffset();
+    window.addEventListener('resize', updateOffset);
+    return () => window.removeEventListener('resize', updateOffset);
+  }, [isOpen]);
+
+  if (!isOpen || !schematicId || !mounted) return null;
+
+  const renderSchematic = () => {
+    switch (schematicId) {
+      case "BATT- TEMP":
+        return (
+          <div className="flex flex-col items-center gap-4 w-full h-full justify-center">
+            <Desc text="Battery contains an internal overheat switch (thermal sensor). When battery cell temperature reaches ≥ 71°C, the switch physically closes, grounding the warning circuit." />
+            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+              <B t="Battery" s="Contains Overheat S/W" />
+              <A />
+              <B t="Overheat Switch" s="Closes at 71°C" hl />
+              <A />
+              <L t="BATT- TEMP" st="red" s="Warning" />
+            </div>
+          </div>
+        );
+
+      case "AUX-T REFUEL":
+        return (
+          <div className="flex flex-col items-center gap-4 w-full h-full justify-center">
+            <Desc text="Refueling Panel has a rotary switch with positions: Maint / Aux / Test / Main. When set to any active position, the refuel valve opens. A microswitch on the valve arm physically trips, completing the warning circuit." />
+            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+              <B t="Refueling Panel" s="Switch: Maint / Aux / Test / Main" />
+              <A />
+              <B t="Refuel Valve" s="Opens" hl />
+              <A />
+              <B t="Microswitch" s="Closes" />
+              <A />
+              <L t="AUX-T REFUEL" st="amber" s="Caution" />
+            </div>
+          </div>
+        );
+
+      case "FUEL PRESS":
+        return (
+          <div className="flex flex-col items-center gap-4 w-full h-full justify-center">
+            <Desc text="Low Fuel Pressure Switch (1 EA) is installed on the fuel line near the engine-driven pump. Switch closes at 8–7 PSI (caution ON). Due to mechanical hysteresis, it only opens again at 15 PSI (caution OFF)." />
+            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+              <B t="Fuel Line" s="Engine-driven pump supply" />
+              <A />
+              <B t="Low Fuel Pressure S/W" s="1 EA" hl />
+              <A />
+              <div className="flex flex-col items-center gap-1">
+                <div className="text-sm text-[#8fa8c0] font-mono">Close: 8–7 PSI</div>
+                <div className="text-sm text-[#8fa8c0] font-mono">Open: 15 PSI</div>
+              </div>
+              <A />
+              <L t="FUEL PRESS" st="amber" s="Caution" />
+            </div>
+          </div>
+        );
+
+      case "INLET DE-ICE":
+        return (
+          <div className="flex flex-col items-center gap-4 w-full h-full justify-center">
+            <Desc text="When LH and RH De-ice switches are set to ON, the anti-ice valve opens. A microswitch on the valve closes, completing the circuit to illuminate the caution on the CWS panel." />
+            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+              <B t="LH & RH De-Ice S/W" s="Set to ON" />
+              <A />
+              <B t="Anti-Ice Valve" s="Opens" hl />
+              <A />
+              <B t="Microswitch" s="Closes" />
+              <A />
+              <L t="INLET DE-ICE" st="amber" s="Caution" />
+            </div>
+          </div>
+        );
+
+      case "OIL":
+        return (
+          <div className="flex flex-col items-center gap-4 w-full h-full justify-center">
+            <Desc text="Engine oil flows through Filter → Pressure Switch → Oil Pressure Transmitter → Indicator. The pressure switch branches to the Oil Warning circuit. Warning illuminates when oil pressure drops to ≤ 35 ± 1.5 PSI." />
+            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+              <B t="Engine Oil" s="Supply" />
+              <A />
+              <B t="Oil Filter" s="Filtration stage" />
+              <A />
+              <B t="Pressure Switch" s="Threshold: 35 ± 1.5 PSI" hl />
+              <A />
+              <div className="flex flex-col items-center gap-3">
+                <B t="Oil Pressure Transmitter" s="→ Indicator" />
+                <div className="w-[3px] h-6 bg-[#8fa8c0]"></div>
+                <L t="OIL" st="red" s="Warning" />
+              </div>
+            </div>
+          </div>
+        );
+
+      case "START SELECT":
+        return (
+          <div className="flex flex-col items-center gap-4 w-full h-full justify-center">
+            <Desc text="Warning illuminates when Start Select Switch is at 'VENT' or 'GND' AND one or both Speed Levers are at 'CRUISE' or 'HIGH'. Both conditions must be true simultaneously." />
+            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+              <div className="flex flex-col gap-3 items-center bg-[#1a2228] p-5 rounded border border-[#2a3a44]">
+                <B t="Start Select S/W" s="VENT or GND" />
+                <div className="text-[#ffaa22] font-black text-base">AND</div>
+                <B t="Speed Levers" s="CRUISE or HIGH" />
+              </div>
+              <Brace />
+              <A />
+              <L t="START SELECT" st="amber" s="Warning" />
+            </div>
+          </div>
+        );
+
+      case "FUEL FILT":
+        return (
+          <div className="flex flex-col items-center gap-4 w-full h-full justify-center">
+            <Desc text="When the fuel filter becomes clogged, differential pressure exceeds 13 PSI, causing the mechanical bypass valve to open. The differential pressure switch contact closes, completing the circuit to the CWS." />
+            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+              <B t="Filter Bypass Valve" s="Opens at ΔP > 13 PSI" hl />
+              <A />
+              <B t="Diff Pressure Switch" s="Contact Closes" />
+              <A />
+              <L t="FUEL FILT" st="amber" s="Caution" />
+            </div>
+          </div>
+        );
+
+      case "BATT 1":
+      case "BATT 2":
+        return (
+          <div className="flex flex-col items-center gap-4 w-full h-full justify-center">
+            <Desc text="Caution illuminates if the battery contactor fails to close (battery not coming online to bus bar) OR if an internal fault (cell failure, thermal runaway) is detected in the battery." />
+            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+              <div className="flex flex-col gap-3 items-center bg-[#1a2228] p-5 rounded border border-[#2a3a44]">
+                <B t="Battery Not Coming Online" s="Contactor fails to close" />
+                <div className="text-[#ffaa22] font-black text-base">OR</div>
+                <B t="Fault in Battery" s="Cell failure / thermal runaway" />
+              </div>
+              <Brace />
+              <A />
+              <L t={schematicId} st="amber" s="Caution" />
+            </div>
+          </div>
+        );
+
+      case "INV 1":
+      case "INV 2":
+        return (
+          <div className="flex flex-row items-center gap-8 w-full h-full justify-center">
+            <Desc text="Fault Monitor senses incorrect voltage/frequency. Primary relays (3XR/13XR) de-energize → Faulty inverter disconnected from bus bar → Secondary relays (9XR/19XR) de-energize → Phase lock circuit disconnected → Caution." side />
+            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+              <B t="Fault Monitor" s="Voltage/Freq error" />
+              <A />
+              <B t="Relay 3XR/13XR" s="De-energize" />
+              <A />
+              <B t="Inverter" s="Disconnected from Bus" hl />
+              <A />
+              <B t="Relay 9XR/19XR" s="De-energize" />
+              <A />
+              <B t="Phase Lock" s="Disconnected" />
+              <A />
+              <L t={schematicId} st="amber" s="Caution" />
+            </div>
+          </div>
+        );
+
+      case "NWS 45°":
+        return (
+          <div className="flex flex-row items-center gap-8 w-full h-full justify-center">
+            <Desc text="All four conditions connected in SERIES. If any condition is not satisfied → No caution. All must be true: Hydraulic Switch ON, NWS Switch ON, Both Speed Levers LOW, NWS 45° Button Pressed." side />
+            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+              <div className="flex flex-col gap-3 items-center bg-[#1a2228] p-5 rounded border border-[#2a3a44]">
+                <B t="Hydraulic Switch" s="→ ON" />
+                <B t="NWS Switch" s="→ ON" />
+                <B t="Both Speed Levers" s="→ LOW" />
+                <B t="NWS 45° Button" s="→ PRESSED" />
+                <div className="text-sm text-[#ffaa22] font-bold">ALL IN SERIES</div>
+              </div>
+              <Brace />
+              <A />
+              <L t="NWS 45°" st="amber" s="Caution" />
+            </div>
+          </div>
+        );
+
+      case "NWS BYPASS":
+        return (
+          <div className="flex flex-row items-center gap-8 w-full h-full justify-center">
+            <Desc text="SCU receives Command Potentiometer + Rudder Pedal input and compares with Feedback Potentiometer. On fault detection → Bypass valve de-energized → Bypass valve opens → Bypass microswitches open → Warning Light." side />
+            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+              <div className="flex flex-col gap-3 items-center bg-[#1a2228] p-5 rounded border border-[#2a3a44]">
+                <B t="Command Potentiometer" s="Steering input" />
+                <B t="Rudder Pedal" s="Pressed" />
+                <B t="Feedback Potentiometer" s="Position feedback" />
+              </div>
+              <A />
+              <B t="SCU" s="Steering Control Unit" hl />
+              <A />
+              <B t="Fault Detected" s="Bypass valve de-energized" />
+              <A />
+              <B t="Bypass Valve Opens" s="Microswitches open" />
+              <A />
+              <L t="NWS BYPASS" st="amber" s="Warning" />
+            </div>
+          </div>
+        );
+
+      case "VMO":
+        return (
+          <div className="flex flex-col items-center gap-4 w-full h-full justify-center">
+            <Desc text="Pitot tube pressure + Static Port (S1) pressure feed into the Airspeed Switch via ASI (Pilot) and Drain Valve. Altimeter also connects to the static port. Warning triggers at airspeed = 200 ± 5 knots." />
+            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+              <div className="flex flex-col gap-3 items-center bg-[#1a2228] p-5 rounded border border-[#2a3a44]">
+                <B t="Pitot Tube" s="Dynamic pressure" />
+                <B t="ASI (Pilot)" s="Airspeed indicator" />
+                <B t="Drain Valve" s="Moisture removal" />
+              </div>
+              <A />
+              <B t="Airspeed Switch" s="200 ± 5 knots" hl />
+              <div className="flex flex-col items-center gap-1">
+                <div className="text-sm text-[#8fa8c0]">← Static Port (S1)</div>
+                <div className="text-sm text-[#8fa8c0]">← Altimeter</div>
+              </div>
+              <A />
+              <L t="Vmo" st="red" s="Warning" />
+            </div>
+          </div>
+        );
+
+      case "DOORS":
+        return (
+          <div className="flex flex-row items-center gap-8 w-full h-full justify-center">
+            <Desc text="If ANY door/compartment microswitch closes (door open/unsecured), warning illuminates. 2MC (Rear Baggage) is connected through a diode, isolating it from the front door circuits." side />
+            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+              <div className="flex flex-col gap-1 items-center bg-[#1a2228] p-4 rounded border border-[#2a3a44]">
+                <B t="1MC – Cabin Doors" s="Microswitch" />
+                <div className="text-[#ffaa22] font-black text-sm">OR</div>
+                <B t="3MC – Front Baggage" s="Microswitch" />
+                <div className="text-[#ffaa22] font-black text-sm">OR</div>
+                <B t="4MC – Cabin Upper Half" s="Microswitch" />
+                <div className="text-[#ffaa22] font-black text-sm">OR</div>
+                <B t="5MC – Cabin Door" s="Microswitch" />
+                <div className="text-[#ffaa22] font-black text-sm">OR</div>
+                <B t="2MC – Rear Baggage" s="Via Diode ◄" />
+              </div>
+              <Brace />
+              <A />
+              <L t="DOORS" st="red" s="Warning" />
+            </div>
+          </div>
+        );
+
+      case "FUEL QTY":
+        return (
+          <div className="flex flex-col items-center gap-4 w-full h-full justify-center">
+            <Desc text="Feeder tank contains a float switch. When fuel quantity (Q) drops to Q ≤ 180 LBS, the switch moves to closed position, completing the warning circuit. When Q > 180 LBS, switch is open (no warning)." />
+            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+              <B t="Feeder Tank" s="Fuel reservoir" />
+              <A />
+              <B t="Float Switch" s="In closed position" hl />
+              <A />
+              <div className="flex flex-col items-center gap-1">
+                <div className="text-sm text-emerald-400 font-mono">Q &gt; 180 LBS → Open (OK)</div>
+                <div className="text-sm text-red-400 font-mono">Q ≤ 180 LBS → Closed (WARN)</div>
+              </div>
+              <A />
+              <L t="FUEL QTY" st="amber" s="Warning" />
+            </div>
+          </div>
+        );
+
+      case "PITOT":
+        return (
+          <div className="flex flex-col items-center gap-4 w-full h-full justify-center">
+            <Desc text="28V DC Bus powers the Pitot Switch. Power flows to Pitot Heat Control Box containing relays A1 and A2. Control box monitors current to Pitot Tube heater. If any fault detected (under/over-current, heater failure) → Caution." />
+            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+              <B t="28V DC Bus" s="Power supply" />
+              <A />
+              <B t="Pitot Switch" s="Cockpit – ON" />
+              <A />
+              <B t="Pitot Heat Control Box" s="Relays A1 / A2" hl />
+              <A />
+              <div className="flex flex-col items-center gap-3">
+                <B t="Pitot Tube" s="Heater element" />
+                <div className="w-[3px] h-5 bg-[#8fa8c0]"></div>
+                <L t="PITOT" st="amber" s="Caution" />
+              </div>
+            </div>
+          </div>
+        );
+
+      case "GEN":
+        return (
+          <div className="flex flex-col items-center gap-4 w-full h-full justify-center">
+            <Desc text="Generator Control Unit (GCU) monitors output voltage and frequency. On fault detection, the generator is disconnected from the main bus bar." />
+            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+              <B t="Generator" s="Engine-driven" />
+              <A />
+              <B t="GCU" s="Monitors V & Hz" hl />
+              <A />
+              <B t="Fault Detected" s="Disconnected from bus" />
+              <A />
+              <L t="GEN" st="amber" s="Caution" />
+            </div>
+          </div>
+        );
+
+      default:
+        return (
+          <div className="flex items-center justify-center h-full text-[#8fa8c0] tracking-widest text-sm uppercase">
+            Schematic logic for {schematicId} is not available.
+          </div>
+        );
+    }
+  };
+
+  return createPortal(
+    <div
+      className="fixed top-0 bottom-0 left-0 z-[100] flex items-center justify-center p-4 md:p-8 bg-[#040608]/95 transition-all duration-300"
+      style={{ right: `${rightOffset}px` }}
+    >
+      <div className="w-full h-full flex animate-in fade-in zoom-in duration-200">
+        <Panel hasScrews className="w-full h-full flex flex-col border-[2px] border-[#111] shadow-[0_20px_50px_rgba(0,0,0,0.9)]">
+          <div className="flex items-center justify-between border-b-[2px] border-[#222] p-3 bg-[#1a2228] rounded-t-[8px]">
+            <h2 className="text-[#c1d0df] text-sm md:text-lg font-bold tracking-widest uppercase flex items-center gap-3">
+              <span className="w-3 h-3 rounded-full bg-[#ffaa22] animate-pulse"></span>
+              System Logic: {schematicId}
+            </h2>
+            <button
+              onClick={() => { playGlobalClickSound(); onClose(); }}
+              className="text-[#8fa8c0] hover:text-white font-bold text-xl px-2 transition-colors"
+            >
+              ✕
+            </button>
+          </div>
+          <div className="flex-1 p-4 md:p-6 bg-[repeating-linear-gradient(45deg,#1a2530_0,#1a2530_2px,transparent_2px,transparent_8px)] flex flex-col overflow-hidden">
+            <div className="bg-[#1e2a35] border-2 border-[#2a3a44] rounded-lg p-4 md:p-6 shadow-[inset_0_5px_15px_rgba(0,0,0,0.5)] flex-1 flex flex-col justify-center overflow-hidden">
+              {renderSchematic()}
+            </div>
+          </div>
+        </Panel>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+/* ── Compact sub-components ────────────────────────────────── */
+
+function B({ t, s, hl }: { t: string; s?: string; hl?: boolean }) {
+  return (
+    <div className={`flex flex-col items-center justify-center px-6 py-4 rounded text-center min-w-[180px] max-w-[280px] border-[3px] shadow-[0_6px_12px_rgba(0,0,0,0.7)] ${
+      hl ? "bg-[#2a3a44] border-[#ffaa22]/60" : "bg-[#2a3a44] border-[#1a1f24]"
+    }`}>
+      <span className="text-[#e1e8f0] font-extrabold text-base md:text-lg tracking-wider uppercase leading-tight">{t}</span>
+      {s && <span className={`text-sm md:text-base mt-2 uppercase tracking-wide ${hl ? "text-[#ffaa22] font-bold" : "text-[#8fa8c0]"}`}>{s}</span>}
+    </div>
+  );
+}
+
+function L({ t, st, s }: { t: string; st: string; s: string }) {
+  const isRed = st === "red";
+  return (
+    <div className={`flex flex-col items-center justify-center px-8 py-5 rounded border-[3px] shadow-[inset_0_0_25px_rgba(255,100,0,0.35)] ${
+      isRed ? "bg-[#3a1111] border-[#ff2222]" : "bg-[#3a2211] border-[#ffaa22]"
+    }`}>
+      <span className={`font-black text-2xl md:text-3xl text-center leading-none ${
+        isRed ? "text-[#ff4444] drop-shadow-[0_0_10px_rgba(255,0,0,1)]" : "text-[#ffaa22] drop-shadow-[0_0_10px_rgba(255,150,0,1)]"
+      }`}>{t}</span>
+      <span className={`text-sm mt-2 font-bold uppercase tracking-wider ${isRed ? "text-[#ff8888]" : "text-[#ffcc88]"}`}>{s}</span>
+    </div>
+  );
+}
+
+function A() {
+  return (
+    <div className="flex items-center justify-center mx-3">
+      <div className="w-10 h-[3px] bg-[#8fa8c0]"></div>
+      <div className="w-0 h-0 border-t-[7px] border-t-transparent border-l-[12px] border-l-[#8fa8c0] border-b-[7px] border-b-transparent"></div>
+    </div>
+  );
+}
+
+function Brace() {
+  return (
+    <div className="text-[#ffaa22] text-6xl md:text-8xl font-light mx-3">{"}"}</div>
+  );
+}
+
+function Desc({ text, side }: { text: string; side?: boolean }) {
+  if (side) {
+    return (
+      <div className="text-[#8fa8c0] text-sm md:text-base leading-relaxed text-left max-w-[280px] min-w-[220px] px-4 pr-8 flex-shrink-0">
+        {text}
+      </div>
+    );
+  }
+  return (
+    <div className="text-[#8fa8c0] text-base md:text-lg leading-relaxed text-center max-w-[900px] mb-4 px-4">
+      {text}
+    </div>
+  );
+}
