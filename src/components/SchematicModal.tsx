@@ -17,22 +17,9 @@ export default function SchematicModal({
 }) {
   const sim = useSimulator();
   const [mounted, setMounted] = useState(false);
-  const [rightOffset, setRightOffset] = useState(0);
 
   useEffect(() => {
     setMounted(true);
-    const updateOffset = () => {
-      const rightPanel = document.getElementById('right-panel');
-      if (rightPanel && window.innerWidth >= 768) {
-        const rect = rightPanel.getBoundingClientRect();
-        setRightOffset(window.innerWidth - rect.left + 8);
-      } else {
-        setRightOffset(0);
-      }
-    };
-    updateOffset();
-    window.addEventListener('resize', updateOffset);
-    return () => window.removeEventListener('resize', updateOffset);
   }, [isOpen]);
 
   if (!isOpen || !schematicId || !mounted) return null;
@@ -683,10 +670,7 @@ export default function SchematicModal({
   };
 
   return createPortal(
-    <div
-      className="fixed top-0 bottom-0 left-0 z-[100] flex items-center justify-center p-4 md:p-8 bg-[#040608]/95 transition-all duration-300"
-      style={{ right: `${rightOffset}px` }}
-    >
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-8 bg-[#040608]/95 transition-all duration-300">
       <div className="w-full h-full flex animate-in fade-in zoom-in duration-200">
         <Panel hasScrews className="w-full h-full flex flex-col border-[2px] border-[#111] shadow-[0_20px_50px_rgba(0,0,0,0.9)]">
           <div className="flex items-center justify-between border-b-[2px] border-[#222] p-3 bg-[#1a2228] rounded-t-[8px]">
@@ -704,7 +688,7 @@ export default function SchematicModal({
           <div className="flex-1 p-2 md:p-4 bg-[repeating-linear-gradient(45deg,#1a2530_0,#1a2530_2px,transparent_2px,transparent_8px)] flex flex-col min-h-0 overflow-hidden">
             <div className="bg-[#1e2a35] border-2 border-[#2a3a44] rounded-lg p-4 shadow-[inset_0_5px_15px_rgba(0,0,0,0.5)] w-full h-full overflow-auto flex flex-col">
               <div className="m-auto w-full flex-shrink-0 flex items-center justify-start md:justify-center overflow-x-auto overflow-y-hidden">
-                <div className="transform scale-[0.6] sm:scale-75 md:scale-90 lg:scale-100 origin-left md:origin-center min-w-max pb-4">
+                <div className="transform scale-[0.55] sm:scale-[0.65] md:scale-75 lg:scale-90 origin-left md:origin-center min-w-max pb-4">
                   {renderSchematic()}
                 </div>
               </div>
