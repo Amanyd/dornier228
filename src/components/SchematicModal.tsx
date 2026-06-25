@@ -389,6 +389,56 @@ export default function SchematicModal({
             </div>
           </div>
         );
+      case "CABIN TEMP":
+        return (
+          <div className="flex flex-col items-center gap-8 w-full h-full justify-center mt-4">
+            <Desc text="AC Distributing Duct temperature is monitored. If it exceeds 75 ± 5 °C, the overtemp switch closes, triggering the Cabin Temp caution." />
+            <div className="flex flex-row items-center justify-center gap-2 md:gap-4 flex-wrap">
+              <div className="flex items-center h-16 md:h-20"><B t="AC Distributing Duct" /></div>
+              <div className="flex items-center h-16 md:h-20"><A /></div>
+              <div className="flex items-center h-16 md:h-20"><B t="Overtemp Switch Closes" s="at 75 ± 5 °C" /></div>
+              <div className="flex items-center h-16 md:h-20"><A /></div>
+              <div className="flex items-center h-16 md:h-20"><L t="CABIN TEMP" st="amber" s="Caution" /></div>
+            </div>
+          </div>
+        );
+
+      case "FUEL DUMP":
+        return (
+          <div className="flex flex-col items-center gap-8 w-full h-full justify-center mt-4">
+            <Desc text="Activating Fuel Dump Switch causes motors to rotate the valve ball. Valve opens to let fuel exit the wing. Simultaneously, cam microswitch contacts close, illuminating the caution light." />
+            
+            <div className="flex flex-row items-start justify-center gap-2 md:gap-4 flex-wrap">
+               <div className="flex items-center h-16 md:h-20"><B t="Fuel Dump Switch" /></div>
+               <div className="flex items-center h-16 md:h-20"><A /></div>
+               <div className="flex items-center h-16 md:h-20"><B t="Dump Valve Motors" s="Rotate the valve ball" /></div>
+               <div className="flex items-center h-16 md:h-20"><A /></div>
+               
+               {/* Branching from Dump Valve Opens */}
+               <div className="flex flex-col items-center">
+                 <div className="h-16 md:h-20 flex items-center"><B t="Dump Valve Opens" /></div>
+                 
+                 <div className="flex flex-col items-center mt-0 md:mt-2">
+                   <div className="w-[2px] md:w-[3px] h-6 md:h-10 bg-[#8fa8c0] relative mb-1 md:mb-2">
+                     <div className="absolute -bottom-[2px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[5px] md:border-l-[7px] border-r-[5px] md:border-r-[7px] border-t-[6px] md:border-t-[8px] border-t-[#8fa8c0] border-l-transparent border-r-transparent"></div>
+                   </div>
+                   <div className="text-[#8fa8c0] text-[10px] md:text-xs text-center italic mb-1 md:mb-2 leading-tight">
+                     cam microswitch<br/>contacts closed
+                   </div>
+                   <div className="w-[2px] md:w-[3px] h-6 md:h-8 bg-[#8fa8c0] relative mb-2">
+                     <div className="absolute -bottom-[2px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[5px] md:border-l-[7px] border-r-[5px] md:border-r-[7px] border-t-[6px] md:border-t-[8px] border-t-[#8fa8c0] border-l-transparent border-r-transparent"></div>
+                   </div>
+                   <L t="FUEL DUMP" st="amber" s="Caution" />
+                 </div>
+               </div>
+               
+               <div className="flex items-center h-16 md:h-20"><A /></div>
+               <div className="flex items-center h-16 md:h-20">
+                 <div className="text-[#e1e8f0] font-medium text-sm md:text-base italic px-2 font-serif">Fuel exits wing</div>
+               </div>
+            </div>
+          </div>
+        );
 
       case "VMO":
         return (
