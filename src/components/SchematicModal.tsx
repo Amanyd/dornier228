@@ -106,20 +106,59 @@ export default function SchematicModal({
 
       case "OIL":
         return (
-          <div className="flex flex-col items-center gap-4 w-full h-full justify-center">
+          <div className="flex flex-col items-center gap-8 w-full h-full justify-center mt-4">
             <Desc text="Engine oil flows through Filter → Pressure Switch → Oil Pressure Transmitter → Indicator. The pressure switch branches to the Oil Warning circuit. Warning illuminates when oil pressure drops to ≤ 35 ± 1.5 PSI." />
-            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
-              <B t="Engine Oil" s="Supply" />
-              <A />
-              <B t="Oil Filter" s="Filtration stage" />
-              <A />
-              <B t="Pressure Switch" s="Threshold: 35 ± 1.5 PSI" hl />
-              <A />
-              <div className="flex flex-col items-center gap-3">
-                <B t="Oil Pressure Transmitter" s="→ Indicator" />
-                <div className="w-[3px] h-6 bg-[#8fa8c0]"></div>
-                <L t="OIL" st="red" s="Warning" />
+            <div className="flex flex-row items-start justify-center gap-2 md:gap-4 flex-wrap relative">
+              <div className="flex items-center h-16 md:h-20"><span className="text-[#e1e8f0] font-extrabold text-sm md:text-base tracking-wide uppercase italic">OIL</span></div>
+              
+              <div className="flex items-center h-16 md:h-20 px-1 md:px-2">
+                <span className="text-[#8fa8c0] font-bold text-lg md:text-xl tracking-widest">====&gt;</span>
               </div>
+              
+              <div className="flex items-center h-16 md:h-20"><B t="Filter" /></div>
+              
+              <div className="flex items-center h-16 md:h-20"><A /></div>
+              
+              {/* Branching Switch Node */}
+              <div className="flex flex-col items-center relative">
+                <div className="h-16 md:h-20 w-16 md:w-20 relative flex items-center justify-center">
+                   {/* Hand-drawn style switch */}
+                   <svg className="w-full h-full text-[#8fa8c0] overflow-visible" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="3">
+                     {/* Scribbled circle around it */}
+                     <path d="M 10 50 A 40 40 0 1 1 90 50 A 40 40 0 1 1 5 55" stroke="#33aa55" strokeWidth="1.5" strokeDasharray="4 2" opacity="0.6"/>
+                     
+                     <circle cx="20" cy="60" r="5" fill="currentColor" />
+                     <circle cx="80" cy="60" r="5" fill="currentColor" />
+                     <circle cx="50" cy="30" r="5" fill="currentColor" />
+                     <path d="M 20 60 L 50 30 L 80 60" />
+                     
+                     {/* Line going down to warning */}
+                     <path d="M 50 30 L 50 120" strokeDasharray="4 4" />
+
+                     {/* Arrow from note */}
+                     <path d="M -30 90 Q 0 80 40 35" stroke="#33aa55" strokeWidth="1.5" markerEnd="url(#green-arrow)" opacity="0.8"/>
+                     <defs>
+                       <marker id="green-arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                         <polygon points="0 0, 10 3.5, 0 7" fill="#33aa55"/>
+                       </marker>
+                     </defs>
+                   </svg>
+                </div>
+
+                <div className="mt-8">
+                  <L t="OIL" st="red" s="Warning" />
+                </div>
+
+                {/* Hand-written Note */}
+                <div className="absolute top-[80px] md:top-[90px] -left-32 md:-left-44 w-32 md:w-44 text-[#8fa8c0] text-[10px] md:text-xs text-right font-medium leading-tight opacity-90 italic">
+                  Warning comes when Pressure sensed Here<br/>= 35 ± 1.5 PSI°
+                </div>
+              </div>
+
+              <div className="flex items-center h-16 md:h-20"><A /></div>
+              <div className="flex items-center h-16 md:h-20"><B t="Oil Pressure Transmitter" /></div>
+              <div className="flex items-center h-16 md:h-20"><A /></div>
+              <div className="flex items-center h-16 md:h-20"><B t="Indicator" /></div>
             </div>
           </div>
         );
