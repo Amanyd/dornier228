@@ -363,9 +363,11 @@ export default function SchematicModal({
               ✕
             </button>
           </div>
-          <div className="flex-1 p-4 md:p-6 bg-[repeating-linear-gradient(45deg,#1a2530_0,#1a2530_2px,transparent_2px,transparent_8px)] flex flex-col overflow-hidden">
-            <div className="bg-[#1e2a35] border-2 border-[#2a3a44] rounded-lg p-4 md:p-6 shadow-[inset_0_5px_15px_rgba(0,0,0,0.5)] flex-1 flex flex-col justify-center overflow-hidden">
-              {renderSchematic()}
+          <div className="flex-1 p-2 md:p-4 bg-[repeating-linear-gradient(45deg,#1a2530_0,#1a2530_2px,transparent_2px,transparent_8px)] flex flex-col min-h-0 overflow-hidden">
+            <div className="bg-[#1e2a35] border-2 border-[#2a3a44] rounded-lg p-4 shadow-[inset_0_5px_15px_rgba(0,0,0,0.5)] w-full h-full overflow-auto flex flex-col">
+              <div className="m-auto w-full flex-shrink-0 flex items-center justify-center">
+                {renderSchematic()}
+              </div>
             </div>
           </div>
         </Panel>
@@ -379,11 +381,11 @@ export default function SchematicModal({
 
 function B({ t, s, hl }: { t: string; s?: string; hl?: boolean }) {
   return (
-    <div className={`flex flex-col items-center justify-center px-6 py-4 rounded text-center min-w-[180px] max-w-[280px] border-[3px] shadow-[0_6px_12px_rgba(0,0,0,0.7)] ${
+    <div className={`flex flex-col items-center justify-center px-2 md:px-4 py-2 md:py-3 rounded text-center min-w-[140px] md:min-w-[160px] max-w-[220px] border-[2px] md:border-[3px] shadow-[0_4px_8px_rgba(0,0,0,0.7)] ${
       hl ? "bg-[#2a3a44] border-[#ffaa22]/60" : "bg-[#2a3a44] border-[#1a1f24]"
     }`}>
-      <span className="text-[#e1e8f0] font-extrabold text-base md:text-lg tracking-wider uppercase leading-tight">{t}</span>
-      {s && <span className={`text-sm md:text-base mt-2 uppercase tracking-wide ${hl ? "text-[#ffaa22] font-bold" : "text-[#8fa8c0]"}`}>{s}</span>}
+      <span className="text-[#e1e8f0] font-extrabold text-xs md:text-sm tracking-wide uppercase leading-tight">{t}</span>
+      {s && <span className={`text-[10px] md:text-xs mt-1 uppercase tracking-wide ${hl ? "text-[#ffaa22] font-bold" : "text-[#8fa8c0]"}`}>{s}</span>}
     </div>
   );
 }
@@ -391,42 +393,42 @@ function B({ t, s, hl }: { t: string; s?: string; hl?: boolean }) {
 function L({ t, st, s }: { t: string; st: string; s: string }) {
   const isRed = st === "red";
   return (
-    <div className={`flex flex-col items-center justify-center px-8 py-5 rounded border-[3px] shadow-[inset_0_0_25px_rgba(255,100,0,0.35)] ${
+    <div className={`flex flex-col items-center justify-center px-4 md:px-6 py-3 md:py-4 rounded border-[2px] md:border-[3px] shadow-[inset_0_0_15px_rgba(255,100,0,0.35)] ${
       isRed ? "bg-[#3a1111] border-[#ff2222]" : "bg-[#3a2211] border-[#ffaa22]"
     }`}>
-      <span className={`font-black text-2xl md:text-3xl text-center leading-none ${
-        isRed ? "text-[#ff4444] drop-shadow-[0_0_10px_rgba(255,0,0,1)]" : "text-[#ffaa22] drop-shadow-[0_0_10px_rgba(255,150,0,1)]"
+      <span className={`font-black text-lg md:text-xl text-center leading-none ${
+        isRed ? "text-[#ff4444] drop-shadow-[0_0_6px_rgba(255,0,0,1)]" : "text-[#ffaa22] drop-shadow-[0_0_6px_rgba(255,150,0,1)]"
       }`}>{t}</span>
-      <span className={`text-sm mt-2 font-bold uppercase tracking-wider ${isRed ? "text-[#ff8888]" : "text-[#ffcc88]"}`}>{s}</span>
+      <span className={`text-[10px] md:text-xs mt-1 font-bold uppercase tracking-wide ${isRed ? "text-[#ff8888]" : "text-[#ffcc88]"}`}>{s}</span>
     </div>
   );
 }
 
 function A() {
   return (
-    <div className="flex items-center justify-center mx-3">
-      <div className="w-10 h-[3px] bg-[#8fa8c0]"></div>
-      <div className="w-0 h-0 border-t-[7px] border-t-transparent border-l-[12px] border-l-[#8fa8c0] border-b-[7px] border-b-transparent"></div>
+    <div className="flex items-center justify-center mx-1 md:mx-3 shrink-0">
+      <div className="w-6 md:w-10 h-[2px] md:h-[3px] bg-[#8fa8c0]"></div>
+      <div className="w-0 h-0 border-t-[5px] md:border-t-[7px] border-t-transparent border-l-[8px] md:border-l-[12px] border-l-[#8fa8c0] border-b-[5px] md:border-b-[7px] border-b-transparent"></div>
     </div>
   );
 }
 
 function Brace() {
   return (
-    <div className="text-[#ffaa22] text-6xl md:text-8xl font-light mx-3">{"}"}</div>
+    <div className="text-[#ffaa22] text-4xl md:text-6xl font-light mx-2 md:mx-3 shrink-0">{"}"}</div>
   );
 }
 
 function Desc({ text, side }: { text: string; side?: boolean }) {
   if (side) {
     return (
-      <div className="text-[#8fa8c0] text-sm md:text-base leading-relaxed text-left max-w-[280px] min-w-[220px] px-4 pr-8 flex-shrink-0">
+      <div className="text-[#8fa8c0] text-xs md:text-sm leading-relaxed text-left max-w-[220px] md:max-w-[280px] min-w-[160px] md:min-w-[220px] px-2 md:px-4 md:pr-8 flex-shrink-0">
         {text}
       </div>
     );
   }
   return (
-    <div className="text-[#8fa8c0] text-base md:text-lg leading-relaxed text-center max-w-[900px] mb-4 px-4">
+    <div className="text-[#8fa8c0] text-sm md:text-base leading-relaxed text-center max-w-[800px] mb-2 md:mb-4 px-4">
       {text}
     </div>
   );
