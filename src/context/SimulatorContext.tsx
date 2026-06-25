@@ -49,8 +49,8 @@ type SimulatorState = {
   oilWarning: boolean;
 
   // START SELECT
-  startSelectSwitch: 'OFF' | 'VENT' | 'GND';
-  setStartSelectSwitch: (v: 'OFF' | 'VENT' | 'GND') => void;
+  startSelectSwitch: 'AIR' | 'VENT' | 'GND';
+  setStartSelectSwitch: (v: 'AIR' | 'VENT' | 'GND') => void;
   startSelectWarning: boolean;
 
   // Fuel Filter
@@ -159,7 +159,7 @@ export function SimulatorProvider({ children }: { children: React.ReactNode }) {
   const setOilPressurePsi = (v: number) => setOilPressurePsiState(v);
 
   // START SELECT
-  const [startSelectSwitch, setStartSelectSwitch] = useState<'OFF' | 'VENT' | 'GND'>('OFF');
+  const [startSelectSwitch, setStartSelectSwitch] = useState<'AIR' | 'VENT' | 'GND'>('AIR');
   const startSelectWarning = (startSelectSwitch === 'VENT' || startSelectSwitch === 'GND') && (speedLevers === 'CRUISE' || speedLevers === 'HIGH');
 
   // Fuel Filter

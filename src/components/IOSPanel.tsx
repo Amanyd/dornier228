@@ -389,7 +389,7 @@ export default function IOSPanel() {
                 </span>
               </div>
               <div className="flex gap-2">
-                {['OFF', 'VENT', 'GND'].map(mode => (
+                {['AIR', 'VENT', 'GND'].map(mode => (
                   <button
                     key={mode}
                     onClick={() => { playClickSound(); sim.setStartSelectSwitch(mode as any); }}
