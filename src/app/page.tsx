@@ -52,7 +52,7 @@ export default function Home() {
         {/* Left Vertical Panel */}
         <Panel hasScrews className="w-full flex flex-col items-center justify-center p-4 md:p-5 h-full min-h-0 md:min-h-[340px]">
           {/* Left Panel Gauges */}
-          <div className="grid grid-cols-2 gap-x-2 gap-y-24 md:gap-y-28 w-full place-items-center place-content-center">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-4 md:gap-y-6 w-full place-items-center place-content-center">
             <TorqueGauge className="w-full aspect-square" hideRightScrews />
             <ITTGauge className="w-full aspect-square" hideLeftScrews />
             <FuelFlowGauge className="w-full aspect-square" hideRightScrews />
