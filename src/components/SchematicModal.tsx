@@ -107,7 +107,7 @@ export default function SchematicModal({
       case "OIL":
         return (
           <div className="flex flex-col items-center gap-8 w-full h-full justify-center mt-4">
-            <Desc text="Engine oil flows through Filter → Pressure Switch → Oil Pressure Transmitter → Indicator. The pressure switch branches to the Oil Warning circuit. Warning illuminates when oil pressure drops to ≤ 35 ± 1.5 PSI." />
+            <Desc text="Engine oil flows through Filter → Pressure Switch → Oil Pressure Transmitter. The pressure switch branches to the Oil Warning circuit. Warning illuminates when oil pressure drops to ≤ 35 ± 1.5 PSI." />
             <div className="flex flex-row items-start justify-center gap-2 md:gap-4 flex-wrap relative">
               <div className="flex items-center h-16 md:h-20"><span className="text-[#e1e8f0] font-extrabold text-sm md:text-base tracking-wide uppercase italic">OIL</span></div>
               
@@ -164,8 +164,6 @@ export default function SchematicModal({
 
               <div className="flex items-center h-16 md:h-20"><A /></div>
               <div className="flex items-center h-16 md:h-20"><B t="Oil Pressure Transmitter" /></div>
-              <div className="flex items-center h-16 md:h-20"><A /></div>
-              <div className="flex items-center h-16 md:h-20"><B t="Indicator" /></div>
             </div>
           </div>
         );
