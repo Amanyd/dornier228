@@ -121,22 +121,29 @@ export default function SchematicModal({
               
               {/* Branching Switch Node */}
               <div className="flex flex-col items-center relative">
-                <div className="h-16 md:h-20 w-16 md:w-20 relative flex items-center justify-center">
-                   {/* Hand-drawn style switch */}
+                <div className="h-16 md:h-20 w-16 md:w-32 relative flex items-center justify-center">
+                   {/* Standard Open Switch Branching off the main line */}
                    <svg className="w-full h-full text-[#8fa8c0] overflow-visible" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="3">
-                     {/* Scribbled circle around it */}
-                     <path d="M 10 50 A 40 40 0 1 1 90 50 A 40 40 0 1 1 5 55" stroke="#33aa55" strokeWidth="1.5" strokeDasharray="4 2" opacity="0.6"/>
+                     {/* Main oil line passing through from Filter to Transmitter */}
+                     <path d="M 0 20 L 100 20" />
                      
-                     <circle cx="20" cy="60" r="5" fill="currentColor" />
-                     <circle cx="80" cy="60" r="5" fill="currentColor" />
-                     <circle cx="50" cy="30" r="5" fill="currentColor" />
-                     <path d="M 20 60 L 50 30 L 80 60" />
+                     {/* Branch line going down to the switch */}
+                     <path d="M 50 20 L 50 40" />
+                     
+                     {/* Switch top terminal */}
+                     <circle cx="50" cy="45" r="5" fill="currentColor" />
+                     
+                     {/* Switch Arm (Open state) */}
+                     <path d="M 50 45 L 75 60" />
+                     
+                     {/* Switch bottom terminal */}
+                     <circle cx="50" cy="75" r="5" fill="currentColor" />
                      
                      {/* Line going down to warning */}
-                     <path d="M 50 30 L 50 120" strokeDasharray="4 4" />
+                     <path d="M 50 75 L 50 120" strokeDasharray="4 4" />
 
                      {/* Arrow from note */}
-                     <path d="M -30 90 Q 0 80 40 35" stroke="#33aa55" strokeWidth="1.5" markerEnd="url(#green-arrow)" opacity="0.8"/>
+                     <path d="M -10 100 Q 15 90 40 55" stroke="#33aa55" strokeWidth="1.5" markerEnd="url(#green-arrow)" opacity="0.8"/>
                      <defs>
                        <marker id="green-arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
                          <polygon points="0 0, 10 3.5, 0 7" fill="#33aa55"/>
@@ -150,7 +157,7 @@ export default function SchematicModal({
                 </div>
 
                 {/* Hand-written Note */}
-                <div className="absolute top-[80px] md:top-[90px] -left-32 md:-left-44 w-32 md:w-44 text-[#8fa8c0] text-[10px] md:text-xs text-right font-medium leading-tight opacity-90 italic">
+                <div className="absolute top-[90px] md:top-[100px] -left-28 md:-left-32 w-32 md:w-40 text-[#8fa8c0] text-[10px] md:text-xs text-right font-medium leading-tight opacity-90 italic">
                   Warning comes when Pressure sensed Here<br/>= 35 ± 1.5 PSI°
                 </div>
               </div>
