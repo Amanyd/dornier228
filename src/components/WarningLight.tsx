@@ -17,21 +17,25 @@ import { playGlobalClickSound } from '@/utils/audio';
 
 export default function WarningLight({ label, status = 'off', forcedOn, onShowSchematic }: WarningLightProps) {
   const [isOn, setIsOn] = useState(false);
+  const [isLongPress, setIsLongPress] = useState(false);
+  const timerRef = React.useRef<NodeJS.Timeout | null>(null);
   const sim = useSimulator();
 
-  const isInteractive = status !== 'off' && forcedOn === undefined;
-  const displayOn = forcedOn !== undefined ? forcedOn : isOn;
+  // If status is not 'off', the light can be interacted with
+  const isInteractive = status !== 'off' && label !== '-';
+  
+  // The light is ON if either the simulator forces it on, OR the user manually clicked it on
+  const displayOn = forcedOn || isOn;
 
   // Base styles including elevation logic
   let baseStyles = `relative flex flex-col items-center justify-center p-0.5 sm:p-1 min-h-[34px] sm:min-h-[40px] md:min-h-[46px] lg:min-h-[54px] rounded-[5px] transition-all duration-100 overflow-hidden select-none border-[1.5px] `;
   
-  if (isInteractive || (sim.iosOpen && onShowSchematic && displayOn)) {
+  if (isInteractive) {
     baseStyles += "cursor-pointer ";
-    if (!displayOn && isInteractive) {
+    if (!displayOn) {
       baseStyles += "active:translate-y-[3px] active:shadow-none ";
     }
   }
-
 
   if (displayOn) {
     baseStyles += "translate-y-[3px] ";
@@ -42,7 +46,7 @@ export default function WarningLight({ label, status = 'off', forcedOn, onShowSc
   let textStyles = "";
   
   if (!displayOn) {
-    // Unclicked state: Elevated, dark background, original glowing text colors
+    // Unclicked state
     const elevationShadow = "shadow-[0_4px_0_#050505,0_5px_8px_rgba(0,0,0,0.6)]";
     if (status === 'red') {
       stateStyles = `bg-[#141618] border-[#333] border-b-[#0a0a0a] ${elevationShadow}`;
@@ -55,7 +59,7 @@ export default function WarningLight({ label, status = 'off', forcedOn, onShowSc
       textStyles = "text-[#555] opacity-20 font-bold drop-shadow-none";
     }
   } else {
-    // Clicked state: Depressed, dark background with faint inner color glow (light from behind)
+    // Clicked state
     if (status === 'red') {
       stateStyles = "bg-[#2a1111] border-[#551111] shadow-[inset_0_0_30px_rgba(255,0,0,0.4)]";
       textStyles = "text-[#ff4444] font-extrabold drop-shadow-[0_0_12px_rgba(255,30,30,1)]";
@@ -75,15 +79,49 @@ export default function WarningLight({ label, status = 'off', forcedOn, onShowSc
     }
   }, [displayOn]);
 
-  const handleClick = () => {
-    if (sim.iosOpen && onShowSchematic && displayOn) {
-      onShowSchematic();
-      playGlobalClickSound();
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (!isInteractive) return;
+    setIsLongPress(false);
+    timerRef.current = setTimeout(() => {
+      setIsLongPress(true);
+      if (onShowSchematic) {
+        onShowSchematic();
+        playGlobalClickSound();
+      }
+    }, 600); // 600ms for long press
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+
+  const handlePointerLeave = (e: React.PointerEvent) => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (!isInteractive) return;
+    
+    // If it was a long press, we already handled opening the modal
+    if (isLongPress) {
+      e.preventDefault();
       return;
     }
+    
+    // Normal click: toggle light
+    setIsOn(!isOn);
+  };
 
+  // Override context menu so long press on mobile doesn't pop up save image
+  const handleContextMenu = (e: React.MouseEvent) => {
     if (isInteractive) {
-      setIsOn(!isOn);
+      e.preventDefault();
     }
   };
 
@@ -91,6 +129,11 @@ export default function WarningLight({ label, status = 'off', forcedOn, onShowSc
     <div
       className={`${baseStyles} ${stateStyles}`}
       onClick={handleClick}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onPointerLeave={handlePointerLeave}
+      onContextMenu={handleContextMenu}
+      style={{ touchAction: isInteractive ? 'none' : 'auto' }}
     >
       {/* Plastic/Noise Texture Overlay */}
       <div 
