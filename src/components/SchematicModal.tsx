@@ -43,7 +43,7 @@ export default function SchematicModal({
         return (
           <div className="flex flex-col items-center gap-4 w-full h-full justify-center">
             <Desc text="Battery contains an internal overheat switch (thermal sensor). When battery cell temperature reaches ≥ 71°C, the switch physically closes, grounding the warning circuit." />
-            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+            <div className="flex flex-row items-center justify-center gap-5 flex-nowrap">
               <B t="Battery" s="Contains Overheat S/W" />
               <A />
               <B t="Overheat Switch" s="Closes at 71°C" hl />
@@ -57,7 +57,7 @@ export default function SchematicModal({
         return (
           <div className="flex flex-col items-center gap-4 w-full h-full justify-center">
             <Desc text="Refueling Panel has a rotary switch with positions: Maint / Aux / Test / Main. When set to any active position, the refuel valve opens. A microswitch on the valve arm physically trips, completing the warning circuit." />
-            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+            <div className="flex flex-row items-center justify-center gap-5 flex-nowrap">
               <B t="Refueling Panel" s="Switch: Maint / Aux / Test / Main" />
               <A />
               <B t="Refuel Valve" s="Opens" hl />
@@ -73,7 +73,7 @@ export default function SchematicModal({
         return (
           <div className="flex flex-col items-center gap-4 w-full h-full justify-center">
             <Desc text="Low Fuel Pressure Switch (1 EA) is installed on the fuel line near the engine-driven pump. Switch closes at 8–7 PSI (caution ON). Due to mechanical hysteresis, it only opens again at 15 PSI (caution OFF)." />
-            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+            <div className="flex flex-row items-center justify-center gap-5 flex-nowrap">
               <B t="Fuel Line" s="Engine-driven pump supply" />
               <A />
               <B t="Low Fuel Pressure S/W" s="1 EA" hl />
@@ -92,7 +92,7 @@ export default function SchematicModal({
         return (
           <div className="flex flex-col items-center gap-4 w-full h-full justify-center">
             <Desc text="When LH and RH De-ice switches are set to ON, the anti-ice valve opens. A microswitch on the valve closes, completing the circuit to illuminate the caution on the CWS panel." />
-            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+            <div className="flex flex-row items-center justify-center gap-5 flex-nowrap">
               <B t="LH & RH De-Ice S/W" s="Set to ON" />
               <A />
               <B t="Anti-Ice Valve" s="Opens" hl />
@@ -108,7 +108,7 @@ export default function SchematicModal({
         return (
           <div className="flex flex-col items-center gap-8 w-full h-full justify-center mt-4">
             <Desc text="Engine oil flows through Filter → Pressure Switch → Oil Pressure Transmitter. The pressure switch branches to the Oil Warning circuit. Warning illuminates when oil pressure drops to ≤ 35 ± 1.5 PSI." />
-            <div className="flex flex-row items-start justify-center gap-2 md:gap-4 flex-wrap relative">
+            <div className="flex flex-row items-start justify-center gap-2 md:gap-4 flex-nowrap relative">
               <div className="flex items-center h-16 md:h-20"><span className="text-[#e1e8f0] font-extrabold text-sm md:text-base tracking-wide uppercase italic">OIL</span></div>
               
               <div className="flex items-center h-16 md:h-20 px-1 md:px-2">
@@ -172,7 +172,7 @@ export default function SchematicModal({
         return (
           <div className="flex flex-col items-center gap-4 w-full h-full justify-center">
             <Desc text="Warning illuminates when Start Select Switch is at 'VENT' or 'GND' AND one or both Speed Levers are at 'CRUISE' or 'HIGH'. Both conditions must be true simultaneously." />
-            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+            <div className="flex flex-row items-center justify-center gap-5 flex-nowrap">
               <div className="flex flex-col gap-3 items-center bg-[#1a2228] p-5 rounded border border-[#2a3a44]">
                 <B t="Start Select S/W" s="VENT or GND" />
                 <div className="text-[#ffaa22] font-black text-base">AND</div>
@@ -189,7 +189,7 @@ export default function SchematicModal({
         return (
           <div className="flex flex-col items-center gap-4 w-full h-full justify-center">
             <Desc text="When the fuel filter becomes clogged, differential pressure exceeds 13 PSI, causing the mechanical bypass valve to open. The differential pressure switch contact closes, completing the circuit to the CWS." />
-            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+            <div className="flex flex-row items-center justify-center gap-5 flex-nowrap">
               <B t="Filter Bypass Valve" s="Opens at ΔP > 13 PSI" hl />
               <A />
               <B t="Diff Pressure Switch" s="Contact Closes" />
@@ -204,7 +204,7 @@ export default function SchematicModal({
         return (
           <div className="flex flex-col items-center gap-4 w-full h-full justify-center">
             <Desc text="Caution illuminates if the battery contactor fails to close (battery not coming online to bus bar) OR if an internal fault (cell failure, thermal runaway) is detected in the battery." />
-            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+            <div className="flex flex-row items-center justify-center gap-5 flex-nowrap">
               <div className="flex flex-col gap-3 items-center bg-[#1a2228] p-5 rounded border border-[#2a3a44]">
                 <B t="Battery Not Coming Online" s="Contactor fails to close" />
                 <div className="text-[#ffaa22] font-black text-base">OR</div>
@@ -220,9 +220,9 @@ export default function SchematicModal({
       case "INV 1":
       case "INV 2":
         return (
-          <div className="flex flex-row items-center gap-8 w-full h-full justify-center">
-            <Desc text="Fault Monitor senses incorrect voltage/frequency. Primary relays (3XR/13XR) de-energize → Faulty inverter disconnected from bus bar → Secondary relays (9XR/19XR) de-energize → Phase lock circuit disconnected → Caution." side />
-            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+          <div className="flex flex-col items-center gap-4 w-full h-full justify-center">
+            <Desc text="Fault Monitor senses incorrect voltage/frequency. Primary relays (3XR/13XR) de-energize → Faulty inverter disconnected from bus bar → Secondary relays (9XR/19XR) de-energize → Phase lock circuit disconnected → Caution." />
+            <div className="flex flex-row items-center justify-center gap-5 flex-nowrap">
               <B t="Fault Monitor" s="Voltage/Freq error" />
               <A />
               <B t="Relay 3XR/13XR" s="De-energize" />
@@ -242,7 +242,7 @@ export default function SchematicModal({
         return (
           <div className="flex flex-row items-center gap-8 w-full h-full justify-center">
             <Desc text="All four conditions connected in SERIES. If any condition is not satisfied → No caution. All must be true: Hydraulic Switch ON, NWS Switch ON, Both Speed Levers LOW, NWS 45° Button Pressed." side />
-            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+            <div className="flex flex-row items-center justify-center gap-5 flex-nowrap">
               <div className="flex flex-col gap-3 items-center bg-[#1a2228] p-5 rounded border border-[#2a3a44]">
                 <B t="Hydraulic Switch" s="→ ON" />
                 <B t="NWS Switch" s="→ ON" />
@@ -262,7 +262,7 @@ export default function SchematicModal({
           <div className="flex flex-col items-center gap-8 w-full h-full justify-center">
             <Desc text="SCU receives Command Potentiometer + Rudder Pedal input and compares with Feedback Potentiometer. On fault detection → Bypass valve de-energized → Bypass valve opens → Bypass microswitches open → Warning Light." />
             
-            <div className="flex flex-row items-center justify-center gap-2 md:gap-4 flex-wrap">
+            <div className="flex flex-row items-center justify-center gap-2 md:gap-4 flex-nowrap">
               {/* SCU and its 3 inputs arranged on Top, Left, Bottom */}
               <div className="grid grid-cols-[auto_auto_auto] grid-rows-[auto_auto_auto] items-center justify-items-center">
                 {/* Top Input */}
@@ -313,7 +313,7 @@ export default function SchematicModal({
           <div className="flex flex-col items-center gap-8 w-full h-full justify-center mt-4">
             <Desc text="Starter Generator residual voltage feeds the GCU (Voltage Regulator, Sensing, Field Excitation, Reverse Current). If a fault is detected, the GEN Relay (GPC) opens, disconnecting the generator from the A/C bus and triggering the GEN caution." />
             
-            <div className="flex flex-row items-start justify-center gap-4 flex-wrap relative">
+            <div className="flex flex-row items-start justify-center gap-4 flex-nowrap relative">
               <div className="flex flex-col items-center">
                 <B t="Starter Generator" />
               </div>
@@ -393,7 +393,7 @@ export default function SchematicModal({
         return (
           <div className="flex flex-col items-center gap-8 w-full h-full justify-center mt-4">
             <Desc text="AC Distributing Duct temperature is monitored. If it exceeds 75 ± 5 °C, the overtemp switch closes, triggering the Cabin Temp caution." />
-            <div className="flex flex-row items-center justify-center gap-2 md:gap-4 flex-wrap">
+            <div className="flex flex-row items-center justify-center gap-2 md:gap-4 flex-nowrap">
               <div className="flex items-center h-16 md:h-20"><B t="AC Distributing Duct" /></div>
               <div className="flex items-center h-16 md:h-20"><A /></div>
               <div className="flex items-center h-16 md:h-20"><B t="Overtemp Switch Closes" s="at 75 ± 5 °C" /></div>
@@ -408,7 +408,7 @@ export default function SchematicModal({
           <div className="flex flex-col items-center gap-8 w-full h-full justify-center mt-4">
             <Desc text="Activating Fuel Dump Switch causes motors to rotate the valve ball. Valve opens to let fuel exit the wing. Simultaneously, cam microswitch contacts close, illuminating the caution light." />
             
-            <div className="flex flex-row items-start justify-center gap-2 md:gap-4 flex-wrap">
+            <div className="flex flex-row items-start justify-center gap-2 md:gap-4 flex-nowrap">
                <div className="flex items-center h-16 md:h-20"><B t="Fuel Dump Switch" /></div>
                <div className="flex items-center h-16 md:h-20"><A /></div>
                <div className="flex items-center h-16 md:h-20"><B t="Dump Valve Motors" s="Rotate the valve ball" /></div>
@@ -445,7 +445,7 @@ export default function SchematicModal({
           <div className="flex flex-col items-center gap-8 w-full h-full justify-center mt-4">
             <Desc text="Air from the Air Condition System flows through a venturi. A pressure switch monitors this line; if pressure exceeds 68–76 PSI, the switch closes and triggers the BLEED PRESS caution. The line continues through the TCV to the Cabin and Cockpit." />
             
-            <div className="flex flex-row items-center justify-center gap-2 md:gap-4 flex-wrap relative">
+            <div className="flex flex-row items-center justify-center gap-2 md:gap-4 flex-nowrap relative">
                <div className="flex items-center h-16 md:h-20"><B t="Air Condition System" /></div>
                
                <div className="flex items-center h-16 md:h-20 px-1"><A /></div>
@@ -525,22 +525,72 @@ export default function SchematicModal({
 
       case "VMO":
         return (
-          <div className="flex flex-col items-center gap-4 w-full h-full justify-center">
-            <Desc text="Pitot tube pressure + Static Port (S1) pressure feed into the Airspeed Switch via ASI (Pilot) and Drain Valve. Altimeter also connects to the static port. Warning triggers at airspeed = 200 ± 5 knots." />
-            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
-              <div className="flex flex-col gap-3 items-center bg-[#1a2228] p-5 rounded border border-[#2a3a44]">
-                <B t="Pitot Tube" s="Dynamic pressure" />
-                <B t="ASI (Pilot)" s="Airspeed indicator" />
-                <B t="Drain Valve" s="Moisture removal" />
+          <div className="flex flex-col items-center gap-8 w-full h-full justify-center mt-6">
+            <Desc text="Pitot tube and Static Port (S1) provide dynamic and static pressure. Airspeed Switch triggers the Vmo warning at 200 ± 5 knots." />
+            
+            <div className="relative w-[360px] md:w-[460px] h-[340px] md:h-[400px]">
+              {/* Pitot Line (Left vertical line) */}
+              <div className="absolute left-[80px] md:left-[100px] bottom-[80px] md:bottom-[100px] top-[140px] md:top-[160px] w-[3px] bg-[#8fa8c0]"></div>
+              
+              {/* Static Line (Right vertical line) */}
+              <div className="absolute right-[60px] md:right-[80px] bottom-[140px] md:bottom-[160px] top-[40px] w-[3px] bg-[#8fa8c0]">
+                {/* Circles for static port ends */}
+                <div className="absolute -top-[5px] -left-[4px] w-[11px] h-[11px] rounded-full border-[3px] border-[#8fa8c0] bg-[#1a1f24]"></div>
+                <div className="absolute -bottom-[5px] -left-[4px] w-[11px] h-[11px] rounded-full border-[3px] border-[#8fa8c0] bg-[#1a1f24]"></div>
+                <div className="absolute top-[40%] translate-x-4 -translate-y-1/2 text-[#8fa8c0] text-[10px] md:text-xs font-serif whitespace-nowrap">Static Port<br/>(S1)</div>
               </div>
-              <A />
-              <B t="Airspeed Switch" s="200 ± 5 knots" hl />
-              <div className="flex flex-col items-center gap-1">
-                <div className="text-sm text-[#8fa8c0]">← Static Port (S1)</div>
-                <div className="text-sm text-[#8fa8c0]">← Altimeter</div>
+
+              {/* Pitot tube entry */}
+              <div className="absolute left-[80px] md:left-[100px] bottom-0 flex flex-col items-center -translate-x-1/2">
+                <div className="w-5 h-[3px] bg-[#8fa8c0] absolute bottom-10 left-1/2 -translate-x-1/2"></div>
+                <div className="w-[3px] h-10 bg-[#8fa8c0]"></div>
+                <div className="w-3 h-8 bg-transparent border-[3px] border-b-0 border-[#8fa8c0] absolute bottom-0 left-1/2 -translate-x-1/2 transform skew-x-[-15deg]"></div>
+                <div className="text-[#8fa8c0] text-xs font-serif mt-2 italic">Pitot tube</div>
               </div>
-              <A />
-              <L t="Vmo" st="red" s="Warning" />
+
+              {/* Altimeter */}
+              <div className="absolute top-[30px] md:top-[25px] left-[150px] md:left-[210px] -translate-x-1/2">
+                <B t="Altimeter" />
+              </div>
+              {/* Connection from right line to Altimeter */}
+              <div className="absolute top-[50px] md:top-[45px] left-[190px] md:left-[260px] right-[60px] md:right-[80px] h-[3px] bg-[#8fa8c0]"></div>
+
+              {/* ASI Pilot */}
+              <div className="absolute top-[100px] left-[150px] md:left-[210px] -translate-x-1/2">
+                <B t="ASI Pilot" />
+              </div>
+              {/* Pitot to ASI Pilot */}
+              <div className="absolute top-[120px] left-[80px] md:left-[100px] right-[210px] md:right-[250px] h-[3px] bg-[#8fa8c0]"></div>
+              {/* Static to ASI Pilot */}
+              <div className="absolute top-[120px] left-[190px] md:left-[260px] right-[60px] md:right-[80px] h-[3px] bg-[#8fa8c0]"></div>
+
+              {/* Drain Valve */}
+              <div className="absolute top-[170px] left-[20px] md:left-[30px] -translate-x-1/2">
+                <B t="Drain Valve" />
+              </div>
+              {/* Pitot to Drain Valve */}
+              <div className="absolute top-[190px] left-[60px] md:left-[80px] right-[280px] md:right-[360px] h-[3px] bg-[#8fa8c0]"></div>
+
+              {/* Airspeed Switch */}
+              <div className="absolute top-[170px] left-[150px] md:left-[210px] -translate-x-1/2">
+                <B t="Airspeed Switch" />
+              </div>
+              {/* Pitot to Airspeed Switch */}
+              <div className="absolute top-[190px] left-[80px] md:left-[100px] right-[210px] md:right-[250px] h-[3px] bg-[#8fa8c0]"></div>
+              {/* Static to Airspeed Switch */}
+              <div className="absolute top-[190px] left-[190px] md:left-[260px] right-[60px] md:right-[80px] h-[3px] bg-[#8fa8c0]"></div>
+
+              {/* Down from Airspeed Switch to Warning */}
+              <div className="absolute top-[210px] left-[150px] md:left-[210px] -translate-x-1/2 w-[3px] h-8 md:h-12 bg-[#8fa8c0]">
+                 <div className="absolute -bottom-[2px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-t-[#8fa8c0] border-l-transparent border-r-transparent"></div>
+              </div>
+              
+              <div className="absolute top-[250px] md:top-[265px] left-[150px] md:left-[210px] -translate-x-1/2 flex items-center">
+                <L t="Vmo" st="red" s="Warning" />
+                <div className="absolute left-[100%] md:left-[110%] top-2 ml-4 w-[120px] text-[#8fa8c0] text-[10px] md:text-xs italic leading-tight whitespace-nowrap">
+                  → warning at :<br/>airspeed = 200 ± 5 knots
+                </div>
+              </div>
             </div>
           </div>
         );
@@ -549,7 +599,7 @@ export default function SchematicModal({
         return (
           <div className="flex flex-row items-center gap-8 w-full h-full justify-center">
             <Desc text="If ANY door/compartment microswitch closes (door open/unsecured), warning illuminates. 2MC (Rear Baggage) is connected through a diode, isolating it from the front door circuits." side />
-            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+            <div className="flex flex-row items-center justify-center gap-5 flex-nowrap">
               <div className="flex flex-col gap-1 items-center bg-[#1a2228] p-4 rounded border border-[#2a3a44]">
                 <B t="1MC – Cabin Doors" s="Microswitch" />
                 <div className="text-[#ffaa22] font-black text-sm">OR</div>
@@ -572,7 +622,7 @@ export default function SchematicModal({
         return (
           <div className="flex flex-col items-center gap-4 w-full h-full justify-center">
             <Desc text="Feeder tank contains a float switch. When fuel quantity (Q) drops to Q ≤ 180 LBS, the switch moves to closed position, completing the warning circuit. When Q > 180 LBS, switch is open (no warning)." />
-            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+            <div className="flex flex-row items-center justify-center gap-5 flex-nowrap">
               <B t="Feeder Tank" s="Fuel reservoir" />
               <A />
               <B t="Float Switch" s="In closed position" hl />
@@ -591,7 +641,7 @@ export default function SchematicModal({
         return (
           <div className="flex flex-col items-center gap-4 w-full h-full justify-center">
             <Desc text="28V DC Bus powers the Pitot Switch. Power flows to Pitot Heat Control Box containing relays A1 and A2. Control box monitors current to Pitot Tube heater. If any fault detected (under/over-current, heater failure) → Caution." />
-            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+            <div className="flex flex-row items-center justify-center gap-5 flex-nowrap">
               <B t="28V DC Bus" s="Power supply" />
               <A />
               <B t="Pitot Switch" s="Cockpit – ON" />
@@ -611,7 +661,7 @@ export default function SchematicModal({
         return (
           <div className="flex flex-col items-center gap-4 w-full h-full justify-center">
             <Desc text="Generator Control Unit (GCU) monitors output voltage and frequency. On fault detection, the generator is disconnected from the main bus bar." />
-            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
+            <div className="flex flex-row items-center justify-center gap-5 flex-nowrap">
               <B t="Generator" s="Engine-driven" />
               <A />
               <B t="GCU" s="Monitors V & Hz" hl />
@@ -653,8 +703,10 @@ export default function SchematicModal({
           </div>
           <div className="flex-1 p-2 md:p-4 bg-[repeating-linear-gradient(45deg,#1a2530_0,#1a2530_2px,transparent_2px,transparent_8px)] flex flex-col min-h-0 overflow-hidden">
             <div className="bg-[#1e2a35] border-2 border-[#2a3a44] rounded-lg p-4 shadow-[inset_0_5px_15px_rgba(0,0,0,0.5)] w-full h-full overflow-auto flex flex-col">
-              <div className="m-auto w-full flex-shrink-0 flex items-center justify-center">
-                {renderSchematic()}
+              <div className="m-auto w-full flex-shrink-0 flex items-center justify-start md:justify-center overflow-x-auto overflow-y-hidden">
+                <div className="transform scale-[0.6] sm:scale-75 md:scale-90 lg:scale-100 origin-left md:origin-center min-w-max pb-4">
+                  {renderSchematic()}
+                </div>
               </div>
             </div>
           </div>
