@@ -63,11 +63,10 @@ export default function SchematicModal({
             <div className="flex flex-row items-center justify-center gap-5 flex-nowrap">
               <B t="Fuel Line" s="Engine-driven pump supply" />
               <A />
-              <B t="Low Fuel Pressure S/W" s="1 EA" hl />
-              <A />
               <div className="flex flex-col items-center gap-1">
-                <div className="text-sm text-[#8fa8c0] font-mono">Close: 8–7 PSI</div>
-                <div className="text-sm text-[#8fa8c0] font-mono">Open: 15 PSI</div>
+                <B t="Low Fuel Pressure S/W" s="1 EA" hl />
+                <div className="text-sm md:text-base text-red-500 font-mono font-bold mt-1">Close: 8–7 PSI</div>
+                <div className="text-sm md:text-base text-green-500 font-mono font-bold">Open: 15 PSI</div>
               </div>
               <A />
               <L t="FUEL PRESS" st="amber" s="Caution" />
@@ -746,13 +745,13 @@ function Brace() {
 function Desc({ text, side }: { text: string; side?: boolean }) {
   if (side) {
     return (
-      <div className="text-[#8fa8c0] text-xs md:text-sm leading-relaxed text-left max-w-[220px] md:max-w-[280px] min-w-[160px] md:min-w-[220px] px-2 md:px-4 md:pr-8 flex-shrink-0">
+      <div className="text-[#8fa8c0] text-sm md:text-base lg:text-lg leading-relaxed text-left max-w-[220px] md:max-w-[320px] min-w-[160px] md:min-w-[260px] px-2 md:px-4 md:pr-8 flex-shrink-0">
         {text}
       </div>
     );
   }
   return (
-    <div className="text-[#8fa8c0] text-sm md:text-base leading-relaxed text-center max-w-[800px] mb-2 md:mb-4 px-4">
+    <div className="text-[#8fa8c0] text-base md:text-lg lg:text-xl leading-relaxed text-center max-w-[900px] mb-2 md:mb-6 px-4">
       {text}
     </div>
   );
