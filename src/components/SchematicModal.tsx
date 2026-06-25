@@ -451,39 +451,28 @@ export default function SchematicModal({
                <div className="flex items-center h-16 md:h-20 px-1"><A /></div>
                
                {/* Branch and Switch */}
-               <div className="flex flex-col items-center relative h-16 md:h-20 w-24 md:w-32">
-                 <svg className="w-full h-full text-[#8fa8c0] overflow-visible" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="3">
-                   {/* Main horizontal line passing through */}
-                   <path d="M 0 50 L 50 50" />
-                   
-                   {/* Branch down to Caution */}
-                   <circle cx="20" cy="50" r="4" fill="currentColor" />
-                   <path d="M 20 50 L 20 120" />
-                   
-                   {/* Switch */}
-                   <circle cx="50" cy="50" r="4" fill="currentColor" />
-                   <path d="M 50 50 L 75 35" strokeDasharray="4 4" />
-                   <path d="M 50 50 L 75 25" />
-                   <circle cx="80" cy="50" r="4" fill="currentColor" />
-                   <path d="M 80 50 L 100 50" />
-                 </svg>
-
-                 {/* Caution drops down from the branch */}
-                 <div className="absolute top-[120px] left-0 -translate-x-1/2 ml-[20px]">
-                   <L t="BLEED PRESS" st="amber" s="Caution" />
+               <div className="flex flex-col items-center relative">
+                 <div className="h-16 md:h-20 w-16 md:w-24 relative flex items-center justify-center">
+                   <svg className="w-full h-full text-[#8fa8c0] overflow-visible" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="3">
+                     {/* Main line passing through */}
+                     <path d="M 0 50 L 100 50" />
+                     {/* Branch line going down */}
+                     <path d="M 50 50 L 50 100" />
+                   </svg>
                  </div>
 
-                 {/* Note pointing to switch */}
-                 <div className="absolute top-[80px] md:top-[90px] left-10 w-48 text-[#8fa8c0] text-[10px] md:text-xs font-medium leading-tight opacity-90 italic flex flex-row items-center gap-1">
-                   <svg className="w-4 h-4 text-[#8fa8c0]" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2">
-                     <path d="M 0 10 L 15 10" markerEnd="url(#arrow-right)"/>
-                     <defs>
-                       <marker id="arrow-right" markerWidth="6" markerHeight="4" refX="5" refY="2" orient="auto">
-                         <polygon points="0 0, 6 2, 0 4" fill="currentColor"/>
-                       </marker>
-                     </defs>
-                   </svg>
-                   the switch closes when<br/>pressure = 68 to 76 PSI°
+                 <div className="mt-2 flex flex-col items-center">
+                   <B t="Pressure Switch" s="68-76 PSI" />
+                   
+                   <div className="w-[3px] h-6 md:h-8 bg-[#8fa8c0] relative mt-1 mb-1">
+                     <div className="absolute -bottom-[2px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[5px] border-r-[5px] border-t-[6px] border-t-[#8fa8c0] border-l-transparent border-r-transparent"></div>
+                   </div>
+                   
+                   <L t="BLEED PRESS" st="amber" s="Caution" />
+                   
+                   <div className="text-[#8fa8c0] text-[10px] md:text-xs font-medium leading-tight opacity-90 italic mt-3 text-center">
+                     Switch closes when<br/>pressure = 68 to 76 PSI
+                   </div>
                  </div>
                </div>
                
