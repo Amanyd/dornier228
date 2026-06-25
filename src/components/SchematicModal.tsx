@@ -313,23 +313,9 @@ export default function SchematicModal({
                 </div>
               </div>
 
-              <div className="bg-[#1a2228] border-2 border-[#8fa8c0] rounded-sm p-3 md:p-4 text-center shadow-[0_4px_10px_rgba(0,0,0,0.5)] z-10">
-                <div className="text-[#e1e8f0] font-bold text-xs md:text-sm tracking-wide leading-relaxed">
-                  Voltage Regulator<br/>
-                  Voltage Sensing<br/>
-                  Field Excitation<br/>
-                  Reverse Current
-                </div>
-              </div>
-
-              <div className="w-[3px] h-8 bg-[#8fa8c0] relative -mt-[2px] z-0"></div>
-              
               <div className="flex flex-row items-center justify-center w-full">
                  {/* Left Path: Fault (Rendered RTL) */}
                  <div className="flex flex-row-reverse items-center justify-start flex-nowrap">
-                    <div className="w-8 md:w-12 h-[3px] bg-[#8fa8c0] relative shrink-0">
-                       <div className="absolute -left-1 md:-left-2 -top-[4px] md:-top-[5px] w-0 h-0 border-r-[8px] md:border-r-[12px] border-y-[6px] md:border-y-[8px] border-y-transparent border-r-[#8fa8c0]"></div>
-                    </div>
                     
                     <B t="Fault Detected" />
                     
@@ -350,21 +336,35 @@ export default function SchematicModal({
                     </div>
                     
                     <L t="GEN" st="amber" s="Caution" />
+
+                    {/* Arrow emerging from GCU Left Wall */}
+                    <div className="w-8 md:w-12 h-[3px] bg-[#8fa8c0] relative shrink-0 mx-1 md:mx-2">
+                       <div className="absolute -left-1 md:-left-2 -top-[4px] md:-top-[5px] w-0 h-0 border-r-[8px] md:border-r-[12px] border-y-[6px] md:border-y-[8px] border-y-transparent border-r-[#8fa8c0]"></div>
+                    </div>
                  </div>
-                 
-                 <div className="w-[3px] h-[3px] bg-[#8fa8c0] rounded-full shrink-0 relative"></div>
+
+                 {/* Central GCU Block */}
+                 <div className="bg-[#1a2228] border-2 border-[#8fa8c0] rounded-sm p-3 md:p-4 text-center shadow-[0_4px_10px_rgba(0,0,0,0.5)] z-10 shrink-0">
+                   <div className="text-[#e1e8f0] font-bold text-xs md:text-sm tracking-wide leading-relaxed">
+                     Voltage Regulator<br/>
+                     Voltage Sensing<br/>
+                     Field Excitation<br/>
+                     Reverse Current
+                   </div>
+                 </div>
                  
                  {/* Right Path: Normal (Rendered LTR) */}
                  <div className="flex flex-row items-center justify-start flex-nowrap">
-                    <div className="w-8 md:w-12 h-[3px] bg-[#8fa8c0] relative shrink-0">
+                    {/* Arrow emerging from GCU Right Wall */}
+                    <div className="w-8 md:w-12 h-[3px] bg-[#8fa8c0] relative shrink-0 mx-1 md:mx-2">
                        <div className="absolute -right-1 md:-right-2 -top-[4px] md:-top-[5px] w-0 h-0 border-l-[8px] md:border-l-[12px] border-y-[6px] md:border-y-[8px] border-y-transparent border-l-[#8fa8c0]"></div>
                     </div>
                     
-                    <div className="text-[#8fa8c0] font-medium text-sm md:text-base italic px-4 whitespace-nowrap">everything NORMAL</div>
+                    <div className="text-[#8fa8c0] font-medium text-sm md:text-base italic px-2 whitespace-nowrap">everything NORMAL</div>
                     
                     <A />
                     
-                    <div className="text-[#33aa55] font-bold text-sm md:text-base uppercase whitespace-nowrap px-4">NO CAUTION</div>
+                    <div className="text-[#33aa55] font-bold text-sm md:text-base uppercase whitespace-nowrap px-2">NO CAUTION</div>
                  </div>
               </div>
             </div>
