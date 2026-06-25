@@ -317,8 +317,8 @@ export default function SchematicModal({
               <div className="relative w-full flex flex-row items-center justify-center min-h-[150px]">
                  
                  {/* Left Half Container - Pushes chain left of center */}
-                 <div className="flex-1 flex flex-row-reverse items-center justify-start h-full pr-[90px] md:pr-[100px] min-w-max z-0">
-                    <div className="flex flex-row-reverse items-center">
+                 <div className="w-1/2 flex flex-row-reverse items-center justify-start h-full pr-[90px] md:pr-[100px] z-0">
+                    <div className="flex flex-row-reverse items-center min-w-max">
                        {/* Arrow pointing OUT of left wall */}
                        <div className="w-8 md:w-12 h-[3px] bg-[#8fa8c0] relative shrink-0 mx-1 md:mx-2">
                           <div className="absolute -left-1 md:-left-2 -top-[4px] md:-top-[5px] w-0 h-0 border-r-[8px] md:border-r-[12px] border-y-[6px] md:border-y-[8px] border-y-transparent border-r-[#8fa8c0]"></div>
@@ -357,8 +357,8 @@ export default function SchematicModal({
                  </div>
                  
                  {/* Right Half Container - Pushes chain right of center */}
-                 <div className="flex-1 flex flex-row items-center justify-start h-full pl-[90px] md:pl-[100px] min-w-max z-0">
-                    <div className="flex flex-row items-center">
+                 <div className="w-1/2 flex flex-row items-center justify-start h-full pl-[90px] md:pl-[100px] z-0">
+                    <div className="flex flex-row items-center min-w-max">
                        {/* Arrow pointing OUT of right wall */}
                        <div className="w-8 md:w-12 h-[3px] bg-[#8fa8c0] relative shrink-0 mx-1 md:mx-2">
                           <div className="absolute -right-1 md:-right-2 -top-[4px] md:-top-[5px] w-0 h-0 border-l-[8px] md:border-l-[12px] border-y-[6px] md:border-y-[8px] border-y-transparent border-l-[#8fa8c0]"></div>
