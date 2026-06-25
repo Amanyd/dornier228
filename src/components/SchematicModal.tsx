@@ -259,22 +259,51 @@ export default function SchematicModal({
 
       case "NWS BYPASS":
         return (
-          <div className="flex flex-row items-center gap-8 w-full h-full justify-center">
-            <Desc text="SCU receives Command Potentiometer + Rudder Pedal input and compares with Feedback Potentiometer. On fault detection → Bypass valve de-energized → Bypass valve opens → Bypass microswitches open → Warning Light." side />
-            <div className="flex flex-row items-center justify-center gap-5 flex-wrap">
-              <div className="flex flex-col gap-3 items-center bg-[#1a2228] p-5 rounded border border-[#2a3a44]">
-                <B t="Command Potentiometer" s="Steering input" />
-                <B t="Rudder Pedal" s="Pressed" />
-                <B t="Feedback Potentiometer" s="Position feedback" />
+          <div className="flex flex-col items-center gap-8 w-full h-full justify-center">
+            <Desc text="SCU receives Command Potentiometer + Rudder Pedal input and compares with Feedback Potentiometer. On fault detection → Bypass valve de-energized → Bypass valve opens → Bypass microswitches open → Warning Light." />
+            
+            <div className="flex flex-row items-center justify-center gap-2 md:gap-4 flex-wrap">
+              {/* SCU and its 3 inputs arranged on Top, Left, Bottom */}
+              <div className="grid grid-cols-[auto_auto_auto] grid-rows-[auto_auto_auto] items-center justify-items-center">
+                {/* Top Input */}
+                <div className="col-start-2 row-start-1 flex flex-col items-center">
+                  <B t="Command Potentiometer" s="Steering input" />
+                  <div className="h-6 md:h-10 w-[2px] md:w-[3px] bg-[#8fa8c0] relative my-1 md:my-2">
+                     {/* Down arrow marker */}
+                     <div className="absolute -bottom-[2px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[5px] md:border-l-[7px] border-r-[5px] md:border-r-[7px] border-t-[6px] md:border-t-[8px] border-t-[#8fa8c0] border-l-transparent border-r-transparent"></div>
+                  </div>
+                </div>
+
+                {/* Left Input */}
+                <div className="col-start-1 row-start-2 flex flex-row items-center mr-0 md:mr-2">
+                  <B t="Rudder Pedal" s="Pressed" />
+                  <A />
+                </div>
+
+                {/* Center SCU */}
+                <div className="col-start-2 row-start-2 relative z-10">
+                  <B t="SCU" s="Steering Control Unit" hl />
+                </div>
+
+                {/* Bottom Input */}
+                <div className="col-start-2 row-start-3 flex flex-col items-center">
+                  <div className="h-6 md:h-10 w-[2px] md:w-[3px] bg-[#8fa8c0] relative my-1 md:my-2">
+                     {/* Up arrow marker */}
+                     <div className="absolute -top-[2px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[5px] md:border-l-[7px] border-r-[5px] md:border-r-[7px] border-b-[6px] md:border-b-[8px] border-b-[#8fa8c0] border-l-transparent border-r-transparent"></div>
+                  </div>
+                  <B t="Feedback Potentiometer" s="Position feedback" />
+                </div>
               </div>
-              <A />
-              <B t="SCU" s="Steering Control Unit" hl />
-              <A />
-              <B t="Fault Detected" s="Bypass valve de-energized" />
-              <A />
-              <B t="Bypass Valve Opens" s="Microswitches open" />
-              <A />
-              <L t="NWS BYPASS" st="amber" s="Warning" />
+
+              {/* Continuing logic flow */}
+              <div className="flex flex-row items-center justify-center gap-2 md:gap-4">
+                <A />
+                <B t="Fault Detected" s="Bypass valve de-energized" />
+                <A />
+                <B t="Bypass Valve Opens" s="Microswitches open" />
+                <A />
+                <L t="NWS BYPASS" st="amber" s="Warning" />
+              </div>
             </div>
           </div>
         );
