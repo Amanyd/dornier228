@@ -76,14 +76,14 @@ export default function Home() {
           </Panel>
 
           {/* Bottom Center Panel */}
-          <Panel hasScrews className="w-full p-4 md:p-5 min-h-[200px] md:min-h-[260px]">
-            <div className="flex flex-row items-center justify-between w-full h-full px-4">
-              <FuelGauge bottomTextSize={14} />
+          <Panel hasScrews className="w-full p-2 md:p-3 flex-1 min-h-0 flex flex-col justify-center items-center overflow-hidden">
+            <div className="flex flex-row items-center justify-between w-full h-full px-1 md:px-2 min-h-0 gap-2">
+              <FuelGauge className="w-[30%] max-w-[150px] aspect-square shrink-1" bottomTextSize={12} />
               {/* Fuel Tank Switches */}
-              <div className="flex-1 h-full mx-4 md:mx-6 flex items-center justify-center">
+              <div className="flex-1 h-full flex items-center justify-center min-w-0 shrink">
                 <FuelTankSwitches />
               </div>
-              <FuelGauge bottomTextSize={14} />
+              <FuelGauge className="w-[30%] max-w-[150px] aspect-square shrink-1" bottomTextSize={12} />
             </div>
           </Panel>
         </div>
