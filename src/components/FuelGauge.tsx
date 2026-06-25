@@ -3,11 +3,24 @@ import React from 'react';
 import GaugeScrew from "./GaugeScrew";
 import { useSimulator } from '@/context/SimulatorContext';
 
-export default function FuelGauge({ className = "w-48 h-48 md:w-56 md:h-56", bottomTextSize = 10, hideLeftScrews = false, hideRightScrews = false }: { className?: string; bottomTextSize?: number; hideLeftScrews?: boolean; hideRightScrews?: boolean }) {
+export default function FuelGauge({ 
+  className = "w-48 h-48 md:w-56 md:h-56", 
+  bottomTextSize = 10, 
+  hideLeftScrews = false, 
+  hideRightScrews = false,
+  qtyOverride
+}: { 
+  className?: string; 
+  bottomTextSize?: number; 
+  hideLeftScrews?: boolean; 
+  hideRightScrews?: boolean;
+  qtyOverride?: number;
+}) {
   const sim = useSimulator();
   
+  const qty = qtyOverride !== undefined ? qtyOverride : sim.fuelQtyLbs;
   // 10.8 degrees per 100 lbs
-  const needleAngle = -135 + (sim.fuelQtyLbs / 100) * 10.8;
+  const needleAngle = -135 + (qty / 100) * 10.8;
 
   return (
     <div className={`relative rounded-full bg-[#1b2228] border-[3px] border-[#111] shadow-[inset_0_0_20px_rgba(0,0,0,0.8),0_4px_10px_rgba(0,0,0,0.5)] flex items-center justify-center shrink-0 ${className}`}>

@@ -56,10 +56,17 @@ const SidewaysToggle = ({
   );
 };
 
-export default function FuelTankSwitches() {
-  const [leftPos, setLeftPos] = useState<'left'|'center'|'right'>('center');
-  const [rightPos, setRightPos] = useState<'left'|'center'|'right'>('center');
-
+export default function FuelTankSwitches({
+  leftPos,
+  setLeftPos,
+  rightPos,
+  setRightPos
+}: {
+  leftPos: 'left'|'center'|'right';
+  setLeftPos: (pos: 'left'|'center'|'right') => void;
+  rightPos: 'left'|'center'|'right';
+  setRightPos: (pos: 'left'|'center'|'right') => void;
+}) {
   return (
     <div className="relative w-full h-full flex items-center justify-center p-1 md:p-2 min-h-[100px] min-w-0">
       {/* The black plate */}

@@ -14,6 +14,8 @@ import FuelTankSwitches from "@/components/FuelTankSwitches";
 
 export default function Home() {
   const [hasStarted, setHasStarted] = useState(false);
+  const [leftFuelPos, setLeftFuelPos] = useState<'left'|'center'|'right'>('center');
+  const [rightFuelPos, setRightFuelPos] = useState<'left'|'center'|'right'>('center');
   const themeAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const handleStart = () => {
@@ -80,12 +82,23 @@ export default function Home() {
           {/* Bottom Center Panel */}
           <Panel hasScrews className="w-full p-2 md:p-3 flex-1 min-h-0 flex flex-col justify-center items-center overflow-hidden">
             <div className="flex flex-row items-center justify-between w-full h-full px-1 md:px-2 min-h-0 gap-2">
-              <FuelGauge className="w-[30%] max-w-[150px] aspect-square shrink-1" bottomTextSize={12} />
+              <FuelGauge 
+                className="w-[30%] max-w-[150px] aspect-square shrink-1" 
+                bottomTextSize={12} 
+                qtyOverride={leftFuelPos === 'left' ? 1306 : leftFuelPos === 'center' ? 2521 : 250}
+              />
               {/* Fuel Tank Switches */}
               <div className="flex-1 h-full flex items-center justify-center min-w-0 shrink">
-                <FuelTankSwitches />
+                <FuelTankSwitches 
+                  leftPos={leftFuelPos} setLeftPos={setLeftFuelPos}
+                  rightPos={rightFuelPos} setRightPos={setRightFuelPos}
+                />
               </div>
-              <FuelGauge className="w-[30%] max-w-[150px] aspect-square shrink-1" bottomTextSize={12} />
+              <FuelGauge 
+                className="w-[30%] max-w-[150px] aspect-square shrink-1" 
+                bottomTextSize={12} 
+                qtyOverride={rightFuelPos === 'right' ? 1306 : rightFuelPos === 'center' ? 2521 : 250}
+              />
             </div>
           </Panel>
         </div>
