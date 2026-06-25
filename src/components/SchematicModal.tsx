@@ -303,7 +303,7 @@ export default function SchematicModal({
           <div className="flex flex-col items-center gap-2 w-full h-full justify-start md:justify-center mt-2 pb-12">
             <Desc text="Starter Generator residual voltage feeds the GCU (Voltage Regulator, Sensing, Field Excitation, Reverse Current). If a fault is detected, the GEN Relay (GPC) opens, disconnecting the generator from the A/C bus and triggering the GEN caution." />
             
-            <div className="flex flex-col items-center w-full max-w-[600px] mt-4">
+            <div className="flex flex-col items-center w-full mt-4">
               <B t="Starter Generator" />
               
               <div className="flex flex-row items-center my-2 h-10 md:h-12 relative">
@@ -313,7 +313,7 @@ export default function SchematicModal({
                 </div>
               </div>
 
-              <div className="bg-[#1a2228] border-2 border-[#8fa8c0] rounded-sm p-3 md:p-4 text-center shadow-[0_4px_10px_rgba(0,0,0,0.5)]">
+              <div className="bg-[#1a2228] border-2 border-[#8fa8c0] rounded-sm p-3 md:p-4 text-center shadow-[0_4px_10px_rgba(0,0,0,0.5)] z-10">
                 <div className="text-[#e1e8f0] font-bold text-xs md:text-sm tracking-wide leading-relaxed">
                   Voltage Regulator<br/>
                   Voltage Sensing<br/>
@@ -322,54 +322,49 @@ export default function SchematicModal({
                 </div>
               </div>
 
-              <div className="w-[3px] h-4 md:h-6 bg-[#8fa8c0]"></div>
+              <div className="w-[3px] h-8 bg-[#8fa8c0] relative -mt-[2px] z-0"></div>
               
-              <div className="flex flex-row w-[280px] md:w-[340px]">
-                 <div className="w-1/2 h-[3px] bg-[#8fa8c0]"></div>
-                 <div className="w-1/2 h-[3px] bg-[#8fa8c0]"></div>
-              </div>
-              
-              <div className="flex flex-row w-[280px] md:w-[340px] justify-between">
-                 {/* Left Path: Fault */}
-                 <div className="flex flex-col items-center w-1/2">
-                    <div className="w-[3px] h-4 md:h-6 bg-[#8fa8c0] relative">
-                       <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-t-[#8fa8c0] border-l-transparent border-r-transparent"></div>
+              <div className="flex flex-row items-center justify-center w-full">
+                 {/* Left Path: Fault (Rendered RTL) */}
+                 <div className="flex flex-row-reverse items-center justify-start flex-nowrap">
+                    <div className="w-8 md:w-12 h-[3px] bg-[#8fa8c0] relative shrink-0">
+                       <div className="absolute -left-1 md:-left-2 -top-[4px] md:-top-[5px] w-0 h-0 border-r-[8px] md:border-r-[12px] border-y-[6px] md:border-y-[8px] border-y-transparent border-r-[#8fa8c0]"></div>
                     </div>
                     
                     <B t="Fault Detected" />
                     
-                    <div className="w-[3px] h-6 md:h-8 bg-[#8fa8c0] relative my-1">
-                       <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-t-[#8fa8c0] border-l-transparent border-r-transparent"></div>
+                    <div className="w-4 md:w-8 h-[3px] bg-[#8fa8c0] relative mx-1 md:mx-2 shrink-0">
+                       <div className="absolute -left-1 md:-left-2 -top-[4px] md:-top-[5px] w-0 h-0 border-r-[8px] md:border-r-[12px] border-y-[6px] md:border-y-[8px] border-y-transparent border-r-[#8fa8c0]"></div>
                     </div>
                     
                     <B t="Gen Relay GPC Opens" />
                     
-                    <div className="w-[3px] h-6 md:h-8 bg-[#8fa8c0] relative my-1">
-                       <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-t-[#8fa8c0] border-l-transparent border-r-transparent"></div>
+                    <div className="w-4 md:w-8 h-[3px] bg-[#8fa8c0] relative mx-1 md:mx-2 shrink-0">
+                       <div className="absolute -left-1 md:-left-2 -top-[4px] md:-top-[5px] w-0 h-0 border-r-[8px] md:border-r-[12px] border-y-[6px] md:border-y-[8px] border-y-transparent border-r-[#8fa8c0]"></div>
                     </div>
                     
                     <B t="Gen Disconnected" s="from A/C Bus" />
                     
-                    <div className="w-[3px] h-6 md:h-8 bg-[#8fa8c0] relative my-1">
-                       <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-t-[#8fa8c0] border-l-transparent border-r-transparent"></div>
+                    <div className="w-4 md:w-8 h-[3px] bg-[#8fa8c0] relative mx-1 md:mx-2 shrink-0">
+                       <div className="absolute -left-1 md:-left-2 -top-[4px] md:-top-[5px] w-0 h-0 border-r-[8px] md:border-r-[12px] border-y-[6px] md:border-y-[8px] border-y-transparent border-r-[#8fa8c0]"></div>
                     </div>
                     
                     <L t="GEN" st="amber" s="Caution" />
                  </div>
                  
-                 {/* Right Path: Normal */}
-                 <div className="flex flex-col items-center w-1/2">
-                    <div className="w-[3px] h-4 md:h-6 bg-[#8fa8c0] relative">
-                       <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-t-[#8fa8c0] border-l-transparent border-r-transparent"></div>
+                 <div className="w-[3px] h-[3px] bg-[#8fa8c0] rounded-full shrink-0 relative"></div>
+                 
+                 {/* Right Path: Normal (Rendered LTR) */}
+                 <div className="flex flex-row items-center justify-start flex-nowrap">
+                    <div className="w-8 md:w-12 h-[3px] bg-[#8fa8c0] relative shrink-0">
+                       <div className="absolute -right-1 md:-right-2 -top-[4px] md:-top-[5px] w-0 h-0 border-l-[8px] md:border-l-[12px] border-y-[6px] md:border-y-[8px] border-y-transparent border-l-[#8fa8c0]"></div>
                     </div>
                     
-                    <div className="text-[#8fa8c0] font-medium text-sm md:text-base italic mt-2 text-center max-w-[120px]">everything NORMAL</div>
+                    <div className="text-[#8fa8c0] font-medium text-sm md:text-base italic px-4 whitespace-nowrap">everything NORMAL</div>
                     
-                    <div className="w-[3px] h-12 md:h-16 bg-[#8fa8c0] relative my-2">
-                       <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-t-[#8fa8c0] border-l-transparent border-r-transparent"></div>
-                    </div>
+                    <A />
                     
-                    <div className="text-[#33aa55] font-bold text-sm md:text-base uppercase text-center mt-4">NO CAUTION</div>
+                    <div className="text-[#33aa55] font-bold text-sm md:text-base uppercase whitespace-nowrap px-4">NO CAUTION</div>
                  </div>
               </div>
             </div>
