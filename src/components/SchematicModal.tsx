@@ -138,7 +138,7 @@ export default function SchematicModal({
                    </svg>
                 </div>
 
-                <div className="mt-8">
+                <div className="mt-16 md:mt-24">
                   <L t="OIL" st="red" s="Warning" />
                 </div>
 
