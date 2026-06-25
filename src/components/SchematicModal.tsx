@@ -217,9 +217,13 @@ export default function SchematicModal({
               <A />
               <B t="Relay 9XR/19XR" s="De-energize" />
               <A />
-              <B t="Phase Lock" s="Disconnected" />
-              <A />
-              <L t={schematicId} st="amber" s="Caution" />
+              <div className="flex flex-col items-center gap-1">
+                <B t="Phase Lock" s="Disconnected" />
+                <div className="w-[3px] h-6 md:h-8 bg-[#8fa8c0] relative mb-1 md:mb-2">
+                  <div className="absolute -bottom-[2px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[5px] border-r-[5px] border-t-[6px] border-t-[#8fa8c0] border-l-transparent border-r-transparent"></div>
+                </div>
+                <L t={schematicId} st="amber" s="Caution" />
+              </div>
             </div>
           </div>
         );
