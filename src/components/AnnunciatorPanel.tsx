@@ -16,10 +16,10 @@ export default function AnnunciatorPanel() {
     { label: "Vmo", status: 'red' },
     { label: ["BATT-", "TEMP"], status: 'red' },
     { label: "OIL", status: 'red' },
-    { label: "-", status: 'amber' },
+    { label: "O2", status: 'off' },
     
     // Row 2
-    { label: "-", status: 'amber' },
+    { label: ["WSHLD", "OVERHT"], status: 'off' },
     { label: ["START", "SELECT"], status: 'amber' },
     { label: ["CABIN", "TEMP"], status: 'amber' },
     { label: "DOORS", status: 'red' },

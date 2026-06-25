@@ -308,6 +308,88 @@ export default function SchematicModal({
           </div>
         );
 
+      case "GEN":
+        return (
+          <div className="flex flex-col items-center gap-8 w-full h-full justify-center mt-4">
+            <Desc text="Starter Generator residual voltage feeds the GCU (Voltage Regulator, Sensing, Field Excitation, Reverse Current). If a fault is detected, the GEN Relay (GPC) opens, disconnecting the generator from the A/C bus and triggering the GEN caution." />
+            
+            <div className="flex flex-row items-start justify-center gap-4 flex-wrap relative">
+              <div className="flex flex-col items-center">
+                <B t="Starter Generator" />
+              </div>
+
+              {/* Dashed Arrow */}
+              <div className="flex flex-col items-center justify-center pt-6 px-2">
+                 <div className="flex items-center text-[#8fa8c0] text-[10px] md:text-xs mb-1 italic opacity-90">Residual voltage goes to</div>
+                 <div className="w-24 md:w-32 border-t-[2px] border-dashed border-[#8fa8c0] relative">
+                    <div className="absolute -right-2 -top-[5px] w-0 h-0 border-l-[8px] border-y-[4px] border-y-transparent border-l-[#8fa8c0]"></div>
+                 </div>
+              </div>
+
+              <div className="flex flex-col items-center relative">
+                 {/* GCU Block */}
+                 <div className="bg-[#1a2228] border-2 border-[#8fa8c0] rounded-sm p-3 md:p-4 text-center z-10 shadow-[0_4px_10px_rgba(0,0,0,0.5)]">
+                   <div className="text-[#e1e8f0] font-bold text-xs md:text-sm tracking-wide leading-relaxed">
+                     Voltage Regulator<br/>
+                     Voltage Sensing<br/>
+                     Field Excitation<br/>
+                     Reverse Current
+                   </div>
+                 </div>
+
+                 {/* Splitting logic */}
+                 <div className="flex flex-row w-[280px] md:w-[320px] justify-between mt-0 relative -top-2">
+                   {/* Left path (Fault) */}
+                   <div className="flex flex-col items-center w-1/2">
+                      <div className="h-8 md:h-12 w-[3px] bg-[#8fa8c0] relative">
+                        <div className="absolute top-0 bottom-0 -left-[2px] w-[2px] bg-[#111]"></div>
+                        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-t-[#8fa8c0] border-l-transparent border-r-transparent"></div>
+                      </div>
+                      <div className="mt-1"><B t="Fault Detected" /></div>
+                      
+                      {/* Arrow to Gen Relay */}
+                      <div className="h-6 md:h-10 w-[3px] bg-[#8fa8c0] relative my-2">
+                        <div className="absolute top-0 bottom-0 -left-[2px] w-[2px] bg-[#111]"></div>
+                        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-t-[#8fa8c0] border-l-transparent border-r-transparent"></div>
+                      </div>
+                      
+                      <B t="Gen Relay GPC Opens" />
+                      
+                      <div className="h-6 md:h-10 w-[3px] bg-[#8fa8c0] relative my-2">
+                        <div className="absolute top-0 bottom-0 -left-[2px] w-[2px] bg-[#111]"></div>
+                        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-t-[#8fa8c0] border-l-transparent border-r-transparent"></div>
+                      </div>
+
+                      <B t="Gen Disconnected" s="from A/C Bus" />
+
+                      <div className="h-6 md:h-10 w-[3px] bg-[#8fa8c0] relative my-2">
+                        <div className="absolute top-0 bottom-0 -left-[2px] w-[2px] bg-[#111]"></div>
+                        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-t-[#8fa8c0] border-l-transparent border-r-transparent"></div>
+                      </div>
+
+                      <L t="GEN" st="amber" s="Caution" />
+                   </div>
+
+                   {/* Right path (Normal) */}
+                   <div className="flex flex-col items-center w-1/2">
+                      <div className="h-16 md:h-24 w-[3px] bg-[#8fa8c0] relative">
+                        <div className="absolute top-0 bottom-0 -left-[2px] w-[2px] bg-[#111]"></div>
+                        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-t-[#8fa8c0] border-l-transparent border-r-transparent"></div>
+                      </div>
+                      <div className="text-[#8fa8c0] font-medium text-sm md:text-base italic mt-2">everything NORMAL</div>
+                      
+                      <div className="h-8 md:h-12 w-[3px] bg-[#8fa8c0] relative my-2">
+                        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-t-[#8fa8c0] border-l-transparent border-r-transparent"></div>
+                      </div>
+                      
+                      <div className="text-[#33aa55] font-bold text-sm md:text-base uppercase">NO CAUTION</div>
+                   </div>
+                 </div>
+              </div>
+            </div>
+          </div>
+        );
+
       case "VMO":
         return (
           <div className="flex flex-col items-center gap-4 w-full h-full justify-center">
