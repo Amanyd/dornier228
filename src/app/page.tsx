@@ -63,11 +63,11 @@ export default function Home() {
         </Panel>
 
         {/* Center Horizontal Stack */}
-        <div className="flex flex-col gap-2 w-full h-full">
+        <div className="flex flex-col gap-2 w-full h-full min-w-0">
           {/* Top Center Panel */}
-          <Panel hasScrews className="w-full p-4 md:p-5 flex flex-col items-center justify-center flex-1 min-h-0 md:min-h-[300px]">
+          <Panel hasScrews className="w-full p-2 sm:p-3 md:p-4 lg:p-5 flex flex-col items-center justify-center flex-1 min-h-0 md:min-h-[300px]">
             {/* Caution Placard */}
-            <div className="bg-[#2a3c75] border-[1.5px] border-[#182352] text-white text-lg md:text-xl px-18 py-1.5 md:py-4 mb-4 shadow-[inset_0_1px_3px_rgba(255,255,255,0.2),0_2px_4px_rgba(0,0,0,0.6)] font-semibold tracking-widest relative flex items-center justify-center">
+            <div className="bg-[#2a3c75] border-[1.5px] border-[#182352] text-white text-xs sm:text-sm md:text-base lg:text-lg px-2 sm:px-6 md:px-10 lg:px-18 py-1.5 md:py-3 mb-4 shadow-[inset_0_1px_3px_rgba(255,255,255,0.2),0_2px_4px_rgba(0,0,0,0.6)] font-semibold tracking-widest relative flex items-center justify-center text-center leading-tight">
               {/* Inset white border */}
               <div className="absolute inset-1.5 md:inset-2 border-[1.5px] border-white/60 pointer-events-none z-0"></div>
               <span className="relative z-10 text-center">CAUTION: DO NOT OPERATE ANY BRAKE DURING TOWING</span>

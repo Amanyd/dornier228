@@ -23,7 +23,7 @@ export default function WarningLight({ label, status = 'off', forcedOn, onShowSc
   const displayOn = forcedOn !== undefined ? forcedOn : isOn;
 
   // Base styles including elevation logic
-  let baseStyles = `relative flex flex-col items-center justify-center p-1 min-h-[48px] md:min-h-[60px] rounded-[5px] transition-all duration-100 overflow-hidden select-none border-[1.5px] `;
+  let baseStyles = `relative flex flex-col items-center justify-center p-0.5 sm:p-1 min-h-[34px] sm:min-h-[40px] md:min-h-[46px] lg:min-h-[54px] rounded-[5px] transition-all duration-100 overflow-hidden select-none border-[1.5px] `;
   
   if (isInteractive || (sim.iosOpen && onShowSchematic && displayOn)) {
     baseStyles += "cursor-pointer ";
@@ -104,7 +104,7 @@ export default function WarningLight({ label, status = 'off', forcedOn, onShowSc
       
       <div className="relative z-10 flex flex-col items-center justify-center w-full h-full">
         {labelArray.map((line, idx) => (
-          <span key={idx} className={`text-[10px] md:text-sm leading-none text-center uppercase font-sans tracking-wide ${textStyles}`}>
+          <span key={idx} className={`text-[7px] sm:text-[8px] md:text-[9px] lg:text-[11px] xl:text-xs leading-[1.1] text-center uppercase font-sans tracking-tight sm:tracking-wide ${textStyles}`}>
             {line}
           </span>
         ))}
