@@ -47,7 +47,7 @@ export default function Home() {
     <main className="min-h-dvh md:h-dvh w-full flex flex-col bg-[#2a3a4c] overflow-y-auto md:overflow-hidden">
       <Navbar />
       {/* Main Dashboard Area - Constrained to remaining height */}
-      <div className="flex-1 min-h-0 p-2 pb-4 w-full grid grid-cols-1 md:grid-cols-[1fr_2.5fr_1fr] gap-2">
+      <div className="flex-1 min-h-0 p-2 pb-4 w-full grid grid-cols-1 md:grid-cols-[1fr_1.8fr_1fr] gap-2">
 
         {/* Left Vertical Panel */}
         <Panel hasScrews className="w-full flex flex-col items-center justify-center p-4 md:p-5 h-full min-h-0 md:min-h-[340px]">
