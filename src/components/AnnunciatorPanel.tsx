@@ -83,6 +83,10 @@ export default function AnnunciatorPanel() {
     if (normalized === "DOORS") return sim.doorWarning;
     if (normalized.includes("FUEL") && normalized.includes("QTY")) return sim.fuelQtyWarning;
     if (normalized === "PITOT") return sim.pitotWarning;
+    if (normalized === "GEN") return sim.genFault;
+    if (normalized.includes("CABIN") && normalized.includes("TEMP")) return sim.cabinTempFault;
+    if (normalized.includes("FUEL") && normalized.includes("DUMP")) return sim.fuelDumpActive;
+    if (normalized.includes("BLEED") && normalized.includes("PRESS")) return sim.bleedPressHigh;
     return false;
   };
 

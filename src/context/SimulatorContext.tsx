@@ -89,6 +89,22 @@ type SimulatorState = {
   pitotFault: boolean;
   setPitotFault: (v: boolean) => void;
   pitotWarning: boolean;
+
+  // GEN
+  genFault: boolean;
+  setGenFault: (v: boolean) => void;
+
+  // CABIN TEMP
+  cabinTempFault: boolean;
+  setCabinTempFault: (v: boolean) => void;
+
+  // FUEL DUMP
+  fuelDumpActive: boolean;
+  setFuelDumpActive: (v: boolean) => void;
+
+  // BLEED PRESS
+  bleedPressHigh: boolean;
+  setBleedPressHigh: (v: boolean) => void;
 };
 
 const SimulatorContext = createContext<SimulatorState | null>(null);
@@ -174,6 +190,18 @@ export function SimulatorProvider({ children }: { children: React.ReactNode }) {
   const [pitotFault, setPitotFault] = useState(false);
   const pitotWarning = pitotFault;
 
+  // GEN
+  const [genFault, setGenFault] = useState(false);
+  
+  // CABIN TEMP
+  const [cabinTempFault, setCabinTempFault] = useState(false);
+
+  // FUEL DUMP
+  const [fuelDumpActive, setFuelDumpActive] = useState(false);
+
+  // BLEED PRESS
+  const [bleedPressHigh, setBleedPressHigh] = useState(false);
+
   return (
     <SimulatorContext.Provider
       value={{
@@ -232,6 +260,14 @@ export function SimulatorProvider({ children }: { children: React.ReactNode }) {
         pitotFault,
         setPitotFault,
         pitotWarning,
+        genFault,
+        setGenFault,
+        cabinTempFault,
+        setCabinTempFault,
+        fuelDumpActive,
+        setFuelDumpActive,
+        bleedPressHigh,
+        setBleedPressHigh,
       }}
     >
       {children}

@@ -440,6 +440,89 @@ export default function SchematicModal({
           </div>
         );
 
+      case "BLEED PRESS":
+        return (
+          <div className="flex flex-col items-center gap-8 w-full h-full justify-center mt-4">
+            <Desc text="Air from the Air Condition System flows through a venturi. A pressure switch monitors this line; if pressure exceeds 68–76 PSI, the switch closes and triggers the BLEED PRESS caution. The line continues through the TCV to the Cabin and Cockpit." />
+            
+            <div className="flex flex-row items-center justify-center gap-2 md:gap-4 flex-wrap relative">
+               <div className="flex items-center h-16 md:h-20"><B t="Air Condition System" /></div>
+               
+               <div className="flex items-center h-16 md:h-20 px-1"><A /></div>
+               
+               {/* Venturi */}
+               <div className="flex flex-col items-center justify-center h-16 md:h-20">
+                 <svg className="w-12 h-8 md:w-16 md:h-10 text-[#8fa8c0]" viewBox="0 0 100 50" fill="none" stroke="currentColor" strokeWidth="3">
+                   <polygon points="0,0 100,15 100,35 0,50" />
+                 </svg>
+                 <div className="text-[#8fa8c0] text-[10px] md:text-xs italic mt-1">venturi</div>
+               </div>
+               
+               <div className="flex items-center h-16 md:h-20 px-1"><A /></div>
+               
+               {/* Branch and Switch */}
+               <div className="flex flex-col items-center relative h-16 md:h-20 w-24 md:w-32">
+                 <svg className="w-full h-full text-[#8fa8c0] overflow-visible" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="3">
+                   {/* Main horizontal line passing through */}
+                   <path d="M 0 50 L 50 50" />
+                   
+                   {/* Branch down to Caution */}
+                   <circle cx="20" cy="50" r="4" fill="currentColor" />
+                   <path d="M 20 50 L 20 120" />
+                   
+                   {/* Switch */}
+                   <circle cx="50" cy="50" r="4" fill="currentColor" />
+                   <path d="M 50 50 L 75 35" strokeDasharray="4 4" />
+                   <path d="M 50 50 L 75 25" />
+                   <circle cx="80" cy="50" r="4" fill="currentColor" />
+                   <path d="M 80 50 L 100 50" />
+                 </svg>
+
+                 {/* Caution drops down from the branch */}
+                 <div className="absolute top-[120px] left-0 -translate-x-1/2 ml-[20px]">
+                   <L t="BLEED PRESS" st="amber" s="Caution" />
+                 </div>
+
+                 {/* Note pointing to switch */}
+                 <div className="absolute top-[80px] md:top-[90px] left-10 w-48 text-[#8fa8c0] text-[10px] md:text-xs font-medium leading-tight opacity-90 italic flex flex-row items-center gap-1">
+                   <svg className="w-4 h-4 text-[#8fa8c0]" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2">
+                     <path d="M 0 10 L 15 10" markerEnd="url(#arrow-right)"/>
+                     <defs>
+                       <marker id="arrow-right" markerWidth="6" markerHeight="4" refX="5" refY="2" orient="auto">
+                         <polygon points="0 0, 6 2, 0 4" fill="currentColor"/>
+                       </marker>
+                     </defs>
+                   </svg>
+                   the switch closes when<br/>pressure = 68 to 76 PSI°
+                 </div>
+               </div>
+               
+               <div className="flex items-center h-16 md:h-20 px-1"><A /></div>
+               
+               <div className="flex items-center h-16 md:h-20"><B t="TCV" /></div>
+               
+               <div className="flex items-center h-16 md:h-20 px-1"><A /></div>
+
+               {/* Split to Cabin and Cockpit */}
+               <div className="flex flex-col justify-center h-16 md:h-20 ml-2 relative">
+                 <div className="absolute top-1/2 left-0 w-[3px] h-12 -translate-y-1/2 bg-[#8fa8c0]"></div>
+                 
+                 <div className="flex flex-row items-center relative -top-4">
+                   <div className="w-4 h-[3px] bg-[#8fa8c0]"></div>
+                   <div className="w-0 h-0 border-l-[6px] border-y-[4px] border-y-transparent border-l-[#8fa8c0]"></div>
+                   <span className="text-[#8fa8c0] italic font-serif ml-2 text-sm">Cabin</span>
+                 </div>
+                 
+                 <div className="flex flex-row items-center relative top-2">
+                   <div className="w-4 h-[3px] bg-[#8fa8c0]"></div>
+                   <div className="w-0 h-0 border-l-[6px] border-y-[4px] border-y-transparent border-l-[#8fa8c0]"></div>
+                   <span className="text-[#8fa8c0] italic font-serif ml-2 text-sm">Cockpit</span>
+                 </div>
+               </div>
+            </div>
+          </div>
+        );
+
       case "VMO":
         return (
           <div className="flex flex-col items-center gap-4 w-full h-full justify-center">

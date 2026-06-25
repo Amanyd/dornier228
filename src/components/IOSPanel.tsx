@@ -467,7 +467,62 @@ export default function IOSPanel() {
             </div>
           </div>
           
-          <div className="mt-auto pt-4 border-t border-[#222]">
+          <div className="space-y-4 mt-6">
+            <h3 className="text-[#8fa8c0] text-xs font-bold tracking-widest uppercase border-l-2 border-[#ffaa22] pl-2">
+              Miscellaneous Systems
+            </h3>
+
+            {/* Miscellaneous Toggles */}
+            <div className="space-y-1 bg-[#1a2530] p-3 border border-[#2a3a44] rounded">
+              <div className="text-[10px] md:text-xs text-[#9fb0c2] mb-2 flex justify-between">
+                <span>System Faults & Triggers</span>
+              </div>
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={() => { playClickSound(); sim.setGenFault(!sim.genFault); }}
+                  className={`w-full py-2 rounded font-bold transition-colors text-xs ${
+                    sim.genFault 
+                      ? 'bg-[#ffaa22] text-black shadow-[0_0_10px_#ffaa22]' 
+                      : 'bg-[#2a3a44] hover:bg-[#3a4a54] text-[#9fb0c2]'
+                  }`}
+                >
+                  GEN FAULT
+                </button>
+                <button
+                  onClick={() => { playClickSound(); sim.setCabinTempFault(!sim.cabinTempFault); }}
+                  className={`w-full py-2 rounded font-bold transition-colors text-xs ${
+                    sim.cabinTempFault 
+                      ? 'bg-[#ffaa22] text-black shadow-[0_0_10px_#ffaa22]' 
+                      : 'bg-[#2a3a44] hover:bg-[#3a4a54] text-[#9fb0c2]'
+                  }`}
+                >
+                  CABIN TEMP HIGH
+                </button>
+                <button
+                  onClick={() => { playClickSound(); sim.setFuelDumpActive(!sim.fuelDumpActive); }}
+                  className={`w-full py-2 rounded font-bold transition-colors text-xs ${
+                    sim.fuelDumpActive 
+                      ? 'bg-[#ffaa22] text-black shadow-[0_0_10px_#ffaa22]' 
+                      : 'bg-[#2a3a44] hover:bg-[#3a4a54] text-[#9fb0c2]'
+                  }`}
+                >
+                  FUEL DUMP ACTIVE
+                </button>
+                <button
+                  onClick={() => { playClickSound(); sim.setBleedPressHigh(!sim.bleedPressHigh); }}
+                  className={`w-full py-2 rounded font-bold transition-colors text-xs ${
+                    sim.bleedPressHigh 
+                      ? 'bg-[#ffaa22] text-black shadow-[0_0_10px_#ffaa22]' 
+                      : 'bg-[#2a3a44] hover:bg-[#3a4a54] text-[#9fb0c2]'
+                  }`}
+                >
+                  BLEED PRESS HIGH
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-auto pt-6 border-t border-[#222]">
             <p className="text-[10px] text-[#607888] leading-tight">
               Use this panel to simulate hardware faults and environmental conditions that trigger Central Warning System (CWS) annunciations.
             </p>
