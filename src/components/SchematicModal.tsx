@@ -126,7 +126,7 @@ export default function SchematicModal({
                      <circle cx="50" cy="75" r="5" fill="currentColor" />
                      
                      {/* Line going down to warning */}
-                     <path d="M 50 75 L 50 120" strokeDasharray="4 4" />
+                     <path d="M 50 75 L 50 160" strokeDasharray="4 4" />
 
                      {/* Arrow from note */}
                      <path d="M -10 100 Q 15 90 40 55" stroke="#33aa55" strokeWidth="1.5" markerEnd="url(#green-arrow)" opacity="0.8"/>
@@ -138,7 +138,7 @@ export default function SchematicModal({
                    </svg>
                 </div>
 
-                <div className="mt-16 md:mt-24">
+                <div className="mt-16 md:mt-[95px] z-10">
                   <L t="OIL" st="red" s="Warning" />
                 </div>
 
@@ -503,69 +503,26 @@ export default function SchematicModal({
           <div className="flex flex-col items-center gap-8 w-full h-full justify-center mt-6">
             <Desc text="Pitot tube and Static Port (S1) provide dynamic and static pressure. Airspeed Switch triggers the Vmo warning at 200 ± 5 knots." />
             
-            <div className="relative w-[360px] md:w-[460px] h-[340px] md:h-[400px]">
-              {/* Pitot Line (Left vertical line) */}
-              <div className="absolute left-[80px] md:left-[100px] bottom-[80px] md:bottom-[100px] top-[140px] md:top-[160px] w-[3px] bg-[#8fa8c0]"></div>
-              
-              {/* Static Line (Right vertical line) */}
-              <div className="absolute right-[60px] md:right-[80px] bottom-[140px] md:bottom-[160px] top-[40px] w-[3px] bg-[#8fa8c0]">
-                {/* Circles for static port ends */}
-                <div className="absolute -top-[5px] -left-[4px] w-[11px] h-[11px] rounded-full border-[3px] border-[#8fa8c0] bg-[#1a1f24]"></div>
-                <div className="absolute -bottom-[5px] -left-[4px] w-[11px] h-[11px] rounded-full border-[3px] border-[#8fa8c0] bg-[#1a1f24]"></div>
-                <div className="absolute top-[40%] translate-x-4 -translate-y-1/2 text-[#8fa8c0] text-[10px] md:text-xs font-serif whitespace-nowrap">Static Port<br/>(S1)</div>
-              </div>
-
-              {/* Pitot tube entry */}
-              <div className="absolute left-[80px] md:left-[100px] bottom-0 flex flex-col items-center -translate-x-1/2">
-                <div className="w-5 h-[3px] bg-[#8fa8c0] absolute bottom-10 left-1/2 -translate-x-1/2"></div>
-                <div className="w-[3px] h-10 bg-[#8fa8c0]"></div>
-                <div className="w-3 h-8 bg-transparent border-[3px] border-b-0 border-[#8fa8c0] absolute bottom-0 left-1/2 -translate-x-1/2 transform skew-x-[-15deg]"></div>
-                <div className="text-[#8fa8c0] text-xs font-serif mt-2 italic">Pitot tube</div>
-              </div>
-
-              {/* Altimeter */}
-              <div className="absolute top-[30px] md:top-[25px] left-[150px] md:left-[210px] -translate-x-1/2">
-                <B t="Altimeter" />
-              </div>
-              {/* Connection from right line to Altimeter */}
-              <div className="absolute top-[50px] md:top-[45px] left-[190px] md:left-[260px] right-[60px] md:right-[80px] h-[3px] bg-[#8fa8c0]"></div>
-
-              {/* ASI Pilot */}
-              <div className="absolute top-[100px] left-[150px] md:left-[210px] -translate-x-1/2">
-                <B t="ASI Pilot" />
-              </div>
-              {/* Pitot to ASI Pilot */}
-              <div className="absolute top-[120px] left-[80px] md:left-[100px] right-[210px] md:right-[250px] h-[3px] bg-[#8fa8c0]"></div>
-              {/* Static to ASI Pilot */}
-              <div className="absolute top-[120px] left-[190px] md:left-[260px] right-[60px] md:right-[80px] h-[3px] bg-[#8fa8c0]"></div>
-
-              {/* Drain Valve */}
-              <div className="absolute top-[170px] left-[20px] md:left-[30px] -translate-x-1/2">
-                <B t="Drain Valve" />
-              </div>
-              {/* Pitot to Drain Valve */}
-              <div className="absolute top-[190px] left-[60px] md:left-[80px] right-[280px] md:right-[360px] h-[3px] bg-[#8fa8c0]"></div>
-
-              {/* Airspeed Switch */}
-              <div className="absolute top-[170px] left-[150px] md:left-[210px] -translate-x-1/2">
-                <B t="Airspeed Switch" />
-              </div>
-              {/* Pitot to Airspeed Switch */}
-              <div className="absolute top-[190px] left-[80px] md:left-[100px] right-[210px] md:right-[250px] h-[3px] bg-[#8fa8c0]"></div>
-              {/* Static to Airspeed Switch */}
-              <div className="absolute top-[190px] left-[190px] md:left-[260px] right-[60px] md:right-[80px] h-[3px] bg-[#8fa8c0]"></div>
-
-              {/* Down from Airspeed Switch to Warning */}
-              <div className="absolute top-[210px] left-[150px] md:left-[210px] -translate-x-1/2 w-[3px] h-8 md:h-12 bg-[#8fa8c0]">
-                 <div className="absolute -bottom-[2px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-t-[#8fa8c0] border-l-transparent border-r-transparent"></div>
-              </div>
-              
-              <div className="absolute top-[250px] md:top-[265px] left-[150px] md:left-[210px] -translate-x-1/2 flex items-center">
-                <L t="Vmo" st="red" s="Warning" />
-                <div className="absolute left-[100%] md:left-[110%] top-2 ml-4 w-[120px] text-[#8fa8c0] text-[10px] md:text-xs italic leading-tight whitespace-nowrap">
-                  → warning at :<br/>airspeed = 200 ± 5 knots
-                </div>
-              </div>
+            <div className="flex flex-row items-center justify-center gap-4 flex-nowrap mt-8">
+               <div className="flex flex-col gap-8">
+                 <B t="Pitot Tube" />
+                 <B t="Static Port (S1)" />
+               </div>
+               
+               <div className="flex flex-col justify-center h-full relative px-4 w-16">
+                  {/* Lines from left blocks converging to center */}
+                  <div className="absolute top-[20px] left-0 w-1/2 h-[50px] border-l-[3px] border-t-[3px] border-[#8fa8c0] rounded-tl-lg"></div>
+                  <div className="absolute bottom-[20px] left-0 w-1/2 h-[50px] border-l-[3px] border-b-[3px] border-[#8fa8c0] rounded-bl-lg"></div>
+                  
+                  {/* Stem connecting to next block */}
+                  <div className="w-12 h-[3px] bg-[#8fa8c0] relative left-1/2">
+                     <div className="absolute -right-2 -top-[5px] w-0 h-0 border-l-[12px] border-y-[8px] border-y-transparent border-l-[#8fa8c0]"></div>
+                  </div>
+               </div>
+               
+               <B t="Airspeed Switch" s="Triggers at 200 ± 5 knots" />
+               <A />
+               <L t="Vmo" st="red" s="Warning" />
             </div>
           </div>
         );

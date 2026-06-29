@@ -5,11 +5,7 @@ import Panel from "@/components/Panel";
 import AnnunciatorPanel from "@/components/AnnunciatorPanel";
 import IOSPanel from "@/components/IOSPanel";
 import FuelGauge from "@/components/FuelGauge";
-import TorqueGauge from "@/components/TorqueGauge";
-import ITTGauge from "@/components/ITTGauge";
-import FuelFlowGauge from "@/components/FuelFlowGauge";
-import RPMGauge from "@/components/RPMGauge";
-import OilGauge from "@/components/OilGauge";
+import CockpitChat from "@/components/CockpitChat";
 import FuelTankSwitches from "@/components/FuelTankSwitches";
 
 export default function Home() {
@@ -51,17 +47,9 @@ export default function Home() {
       {/* Main Dashboard Area - Constrained to remaining height */}
       <div className="flex-1 min-h-0 p-2 pb-4 w-full grid grid-cols-1 md:grid-cols-[1fr_1.8fr_1fr] gap-2">
 
-        {/* Left Vertical Panel */}
-        <Panel hasScrews className="w-full flex flex-col items-center justify-center p-4 md:p-5 h-full min-h-0 md:min-h-[340px]">
-          {/* Left Panel Gauges */}
-          <div className="grid grid-cols-2 gap-x-4 gap-y-4 md:gap-y-6 w-full place-items-center place-content-center">
-            <TorqueGauge className="w-full aspect-square" hideRightScrews />
-            <ITTGauge className="w-full aspect-square" hideLeftScrews />
-            <FuelFlowGauge className="w-full aspect-square" hideRightScrews />
-            <RPMGauge className="w-full aspect-square" hideLeftScrews />
-            <OilGauge className="w-full aspect-square" hideRightScrews />
-
-          </div>
+        {/* Left Vertical Panel - Chat */}
+        <Panel hasScrews hideBottomScrews className="w-full flex flex-col p-0 h-full min-h-0 md:min-h-[340px] overflow-hidden relative z-10">
+           <CockpitChat />
         </Panel>
 
         {/* Center Horizontal Stack */}

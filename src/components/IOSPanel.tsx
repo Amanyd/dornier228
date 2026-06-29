@@ -4,8 +4,6 @@ import React, { useRef, useEffect } from "react";
 import { useSimulator } from "@/context/SimulatorContext";
 import Panel from "./Panel";
 
-import CockpitChat from "./CockpitChat";
-
 import { playGlobalClickSound as playClickSound } from "@/utils/audio";
 
 export default function IOSPanel() {
@@ -23,18 +21,9 @@ export default function IOSPanel() {
       id="right-panel"
       hasScrews 
       hideBottomScrews
-      className={`w-full h-full flex flex-col p-0 min-h-[240px] md:min-h-[340px] overflow-hidden relative transition-all duration-300 ${
-        sim.iosOpen ? "z-[110] shadow-[0_0_50px_rgba(0,0,0,0.8)]" : "z-10"
-      }`}
+      className="w-full h-full flex flex-col p-0 min-h-[240px] md:min-h-[340px] overflow-hidden relative z-10"
     >
-      <CockpitChat />
-      
-      <div
-      className={`absolute inset-0 w-full h-full bg-[#1a2228] z-50 transform transition-transform duration-300 ease-in-out ${
-        sim.iosOpen ? "translate-x-0" : "translate-x-full"
-      } flex flex-col`}
-    >
-      <div className="h-full w-full p-4 flex flex-col gap-4 border-l-[2px] border-[#111]">
+      <div className="h-full w-full p-4 flex flex-col gap-4 bg-[#1a2228] border-l-[2px] border-[#111]">
         <div className="flex items-center justify-center pb-2">
           <h2 className="text-[#c1d0df] text-lg font-bold tracking-widest uppercase">
             Instructor Station
@@ -528,7 +517,6 @@ export default function IOSPanel() {
             </p>
           </div>
         </div>
-      </div>
       </div>
     </Panel>
   );
