@@ -57,9 +57,9 @@ export default function Home() {
           {/* Top Center Panel */}
           <Panel hasScrews className="w-full p-2 sm:p-3 md:p-4 flex flex-col items-center justify-center flex-[2] md:flex-[2.5] min-h-0">
             {/* Caution Placard */}
-            <div className="bg-[#2a3c75] border-[1.5px] border-[#182352] text-white text-xs sm:text-sm md:text-base lg:text-lg px-4 sm:px-8 md:px-10 py-2.5 md:py-3.5 mb-3 md:mb-4 shadow-[inset_0_1px_3px_rgba(255,255,255,0.2),0_2px_4px_rgba(0,0,0,0.6)] font-bold tracking-widest relative flex items-center justify-center text-center leading-tight shrink-0 max-w-full">
+            <div className="bg-[#2a3c75] border-[1.5px] border-[#182352] text-white text-[10px] sm:text-xs md:text-sm lg:text-base px-3 sm:px-6 md:px-8 py-1 md:py-2 mb-2 md:mb-3 shadow-[inset_0_1px_3px_rgba(255,255,255,0.2),0_2px_4px_rgba(0,0,0,0.6)] font-semibold tracking-widest relative flex items-center justify-center text-center leading-tight shrink-0 max-w-full">
               {/* Inset white border */}
-              <div className="absolute inset-1.5 md:inset-2 border-[1.5px] border-white/60 pointer-events-none z-0"></div>
+              <div className="absolute inset-1 md:inset-1.5 border-[1.5px] border-white/60 pointer-events-none z-0"></div>
               <span className="relative z-10 text-center">CAUTION: DO NOT OPERATE ANY BRAKE DURING TOWING</span>
             </div>
             <div className="w-full h-full min-h-0 flex items-center justify-center overflow-hidden">
