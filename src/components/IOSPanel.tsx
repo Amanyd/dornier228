@@ -21,16 +21,16 @@ export default function IOSPanel() {
       id="right-panel"
       hasScrews 
       hideBottomScrews
-      className="w-full h-full flex flex-col p-0 min-h-[240px] md:min-h-[340px] overflow-hidden relative z-10"
+      className="w-full min-h-[350px] lg:min-h-0 lg:h-full flex flex-col p-0 overflow-hidden relative z-10"
     >
-      <div className="h-full w-full p-4 flex flex-col gap-4 bg-[#1a2228] border-l-[2px] border-[#111]">
-        <div className="flex items-center justify-center pb-2">
-          <h2 className="text-[#c1d0df] text-lg font-bold tracking-widest uppercase">
+      <div className="h-full w-full p-2.5 sm:p-3.5 flex flex-col gap-2 sm:gap-3 bg-[#1a2228] border-l-[2px] border-[#111] min-h-0 flex-1">
+        <div className="flex items-center justify-center pl-7 pr-7 pb-1 sm:pb-2">
+          <h2 className="text-[#c1d0df] text-sm sm:text-base md:text-lg font-bold tracking-widest uppercase text-center">
             Instructor Station
           </h2>
         </div>
 
-        <div ref={scrollRef} className="flex flex-col gap-6 overflow-y-auto pr-2 scrollbar-custom flex-1 min-h-0">
+        <div ref={scrollRef} className="flex flex-col gap-4 sm:gap-5 overflow-y-auto pr-1.5 sm:pr-2 scrollbar-custom flex-1 min-h-0 pb-4">
           {/* Malfunctions / Scenarios */}
           <div className="space-y-4">
             <h3 className="text-[#8fa8c0] text-xs font-bold tracking-widest uppercase border-l-2 border-[#ffaa22] pl-2">

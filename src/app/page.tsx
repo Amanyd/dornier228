@@ -42,22 +42,22 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-dvh md:h-dvh w-full flex flex-col bg-[#2a3a4c] overflow-y-auto md:overflow-hidden">
+    <main className="min-h-dvh lg:h-dvh w-full flex flex-col bg-[#2a3a4c] overflow-y-auto lg:overflow-hidden">
       <Navbar />
-      {/* Main Dashboard Area - Constrained to remaining height */}
-      <div className="flex-1 min-h-0 p-2 pb-4 w-full grid grid-cols-1 md:grid-cols-[1fr_1.8fr_1fr] gap-2">
+      {/* Main Dashboard Area - Grid setup for responsive screens */}
+      <div className="flex-1 min-h-0 p-2 sm:p-3 lg:p-4 w-full grid grid-cols-1 lg:grid-cols-[1fr_1.8fr_1fr] xl:grid-cols-[1fr_2fr_1fr] gap-2 md:gap-3 overflow-y-auto lg:overflow-hidden">
 
         {/* Left Vertical Panel - Chat */}
-        <Panel hasScrews hideBottomScrews className="w-full flex flex-col p-0 h-full min-h-0 md:min-h-[340px] overflow-hidden relative z-10">
+        <Panel hasScrews hideBottomScrews className="w-full min-h-[380px] lg:min-h-0 lg:h-full flex flex-col p-0 overflow-hidden relative z-10">
            <CockpitChat />
         </Panel>
 
         {/* Center Horizontal Stack */}
-        <div className="flex flex-col gap-2 w-full h-full min-w-0">
+        <div className="flex flex-col gap-2 md:gap-3 w-full min-h-0 lg:h-full">
           {/* Top Center Panel */}
-          <Panel hasScrews className="w-full p-2 sm:p-3 md:p-4 lg:p-5 flex flex-col items-center justify-center flex-[2] md:flex-[2.5] min-h-0">
+          <Panel hasScrews className="w-full p-2 sm:p-3 md:p-4 flex flex-col items-center justify-center flex-[2] md:flex-[2.5] min-h-0">
             {/* Caution Placard */}
-            <div className="bg-[#2a3c75] border-[1.5px] border-[#182352] text-white text-xs sm:text-sm md:text-base lg:text-lg px-2 sm:px-6 md:px-10 lg:px-18 py-1.5 md:py-3 mb-4 shadow-[inset_0_1px_3px_rgba(255,255,255,0.2),0_2px_4px_rgba(0,0,0,0.6)] font-semibold tracking-widest relative flex items-center justify-center text-center leading-tight shrink-0">
+            <div className="bg-[#2a3c75] border-[1.5px] border-[#182352] text-white text-xs sm:text-sm md:text-base lg:text-lg px-4 sm:px-8 md:px-10 py-2.5 md:py-3.5 mb-3 md:mb-4 shadow-[inset_0_1px_3px_rgba(255,255,255,0.2),0_2px_4px_rgba(0,0,0,0.6)] font-bold tracking-widest relative flex items-center justify-center text-center leading-tight shrink-0 max-w-full">
               {/* Inset white border */}
               <div className="absolute inset-1.5 md:inset-2 border-[1.5px] border-white/60 pointer-events-none z-0"></div>
               <span className="relative z-10 text-center">CAUTION: DO NOT OPERATE ANY BRAKE DURING TOWING</span>
@@ -69,29 +69,29 @@ export default function Home() {
 
           {/* Bottom Center Panel */}
           <Panel hasScrews className="w-full p-2 md:p-3 flex-1 min-h-0 flex flex-col justify-center items-center overflow-hidden">
-            <div className="flex flex-row items-center justify-between w-full h-full px-1 md:px-2 min-h-0 gap-2">
+            <div className="flex flex-row items-center justify-around w-full h-full px-2 sm:px-4 min-h-0 gap-2 sm:gap-4 overflow-hidden">
               <FuelGauge 
-                className="w-[30%] max-w-[150px] aspect-square shrink-1" 
-                bottomTextSize={12} 
+                className="w-[95px] sm:w-[120px] md:w-[135px] aspect-square shrink-0" 
+                bottomTextSize={10} 
                 qtyOverride={leftFuelPos === 'left' ? 1306 : leftFuelPos === 'center' ? 2521 : 250}
               />
               {/* Fuel Tank Switches */}
-              <div className="flex-1 h-full flex items-center justify-center min-w-0 shrink">
+              <div className="flex-1 h-full flex items-center justify-center min-w-0">
                 <FuelTankSwitches 
                   leftPos={leftFuelPos} setLeftPos={setLeftFuelPos}
                   rightPos={rightFuelPos} setRightPos={setRightFuelPos}
                 />
               </div>
               <FuelGauge 
-                className="w-[30%] max-w-[150px] aspect-square shrink-1" 
-                bottomTextSize={12} 
+                className="w-[95px] sm:w-[120px] md:w-[135px] aspect-square shrink-0" 
+                bottomTextSize={10} 
                 qtyOverride={rightFuelPos === 'right' ? 1306 : rightFuelPos === 'center' ? 2521 : 250}
               />
             </div>
           </Panel>
         </div>
 
-        {/* Right Vertical Panel - Chat & IOS */}
+        {/* Right Vertical Panel - IOS */}
         <IOSPanel />
 
       </div>

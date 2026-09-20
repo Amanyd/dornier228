@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useSimulator } from '@/context/SimulatorContext';
+import { playGlobalClickSound } from '@/utils/audio';
 
 type LightStatus = 'off' | 'amber' | 'red';
 
@@ -13,13 +14,10 @@ interface WarningLightProps {
   onShowSchematic?: () => void;
 }
 
-import { playGlobalClickSound } from '@/utils/audio';
-
 export default function WarningLight({ label, status = 'off', forcedOn, onShowSchematic }: WarningLightProps) {
   const [isOn, setIsOn] = useState(false);
   const [isLongPress, setIsLongPress] = useState(false);
   const timerRef = React.useRef<NodeJS.Timeout | null>(null);
-  const sim = useSimulator();
 
   // If status is not 'off', the light can be interacted with
   const isInteractive = status !== 'off' && label !== '-';
@@ -88,7 +86,7 @@ export default function WarningLight({ label, status = 'off', forcedOn, onShowSc
         onShowSchematic();
         playGlobalClickSound();
       }
-    }, 600); // 600ms for long press
+    }, 600);
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
@@ -108,17 +106,14 @@ export default function WarningLight({ label, status = 'off', forcedOn, onShowSc
   const handleClick = (e: React.MouseEvent) => {
     if (!isInteractive) return;
     
-    // If it was a long press, we already handled opening the modal
     if (isLongPress) {
       e.preventDefault();
       return;
     }
     
-    // Normal click: toggle light
     setIsOn(!isOn);
   };
 
-  // Override context menu so long press on mobile doesn't pop up save image
   const handleContextMenu = (e: React.MouseEvent) => {
     if (isInteractive) {
       e.preventDefault();
@@ -142,8 +137,6 @@ export default function WarningLight({ label, status = 'off', forcedOn, onShowSc
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
         }}
       />
-      
-      {/* Matte finish: No glossy overlay */}
       
       <div className="relative z-10 flex flex-col items-center justify-center w-full h-full">
         {labelArray.map((line, idx) => (

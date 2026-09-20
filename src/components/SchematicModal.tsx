@@ -620,7 +620,6 @@ export default function SchematicModal({
         <Panel hasScrews className="w-full h-full flex flex-col border-[2px] border-[#111] shadow-[0_20px_50px_rgba(0,0,0,0.9)]">
           <div className="flex items-center justify-between border-b-[2px] border-[#222] p-3 bg-[#1a2228] rounded-t-[8px]">
             <h2 className="text-[#c1d0df] text-sm md:text-lg font-bold tracking-widest uppercase flex items-center gap-3">
-              <span className="w-3 h-3 rounded-full bg-[#ffaa22] animate-pulse"></span>
               System Logic: {schematicId}
             </h2>
             <button
